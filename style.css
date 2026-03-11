@@ -1,0 +1,65 @@
+/* General App Theme */
+body {
+    background-color: #0b0e11; /* Deep charcoal/black like Binance */
+    color: #eaecef;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* Navigation Bar */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 5%;
+    background-color: #181a20;
+    border-bottom: 1px solid #2b2f36;
+}
+
+.logo { font-weight: bold; font-size: 1.2rem; color: #f0b90b; }
+
+.auth-buttons button {
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.login { background: transparent; color: white; }
+.signup { background-color: #f0b90b; color: #181a20; }
+
+/* Hero / Bonus Banner */
+.hero {
+    background: linear-gradient(135deg, #1e2329 0%, #0b0e11 100%);
+    padding: 50px 20px;
+    text-align: center;
+    border-bottom: 4px solid #f0b90b;
+}
+
+.bonus-badge {
+    background: rgba(240, 185, 11, 0.1);
+    color: #f0b90b;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+/* Crypto Price Cards */
+.price-container { padding: 40px 5%; }
+
+.coin-card {
+    background: #1e2329;
+    margin-bottom: 12px;
+    padding: 20px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.2s;
+}
+
+.coin-card:hover { transform: scale(1.01); background: #2b3139; }
+
+.price-up { color: #02c076; } /* Green for gains */
