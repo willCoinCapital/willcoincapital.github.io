@@ -14,17 +14,21 @@
         .custom-scroll::-webkit-scrollbar { width: 4px; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #22d3ee; border-radius: 10px; }
         #dashboard.hidden, #main-terminal.hidden, #loader.hidden { display: none; }
+        
+        /* Slider Styling */
         input[type="range"] { -webkit-appearance: none; background: #1f2937; height: 4px; border-radius: 10px; width: 100%; }
         input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: #22d3ee; cursor: pointer; box-shadow: 0 0 15px rgba(34,211,238,0.7); }
+        
         .support-float { position: fixed; bottom: 32px; right: 32px; z-index: 1000; }
         
+        /* Animation for Ledger */
         @keyframes fadeInDown {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .new-row { animation: fadeInDown 0.6s ease-out forwards; }
 
-        /* Loader Animation */
+        /* Loader Spinner */
         .spinner { border: 3px solid rgba(34, 211, 238, 0.1); border-top: 3px solid #22d3ee; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
@@ -104,7 +108,7 @@
             </div>
             <div class="glass p-12 rounded-[40px] text-center border-white/5">
                 <h3 class="text-2xl font-black uppercase mb-4">Awaiting Activation</h3>
-                <p class="text-gray-400 text-sm mb-10">Your account is created. Contact your assigned liquidity agent to activate your matching bonus.</p>
+                <p class="text-gray-400 text-sm mb-10">Your account is successfully registered. Please contact your assigned liquidity agent via live support to activate your maturation cycle.</p>
                 <a href="https://t.me/willCoin_Capital" target="_blank" class="px-10 py-5 bg-cyan-400 text-black font-black rounded-2xl uppercase text-xs btn-glow inline-block">Connect with Agent</a>
             </div>
         </div>
@@ -118,7 +122,7 @@
                 <p>At willCoin Capital, we provide investors with a simple and transparent way to grow their digital assets.</p>
                 <div><h4 class="text-cyan-400 font-bold uppercase mb-1">1. Create Your Account</h4><p>Register a secure account on our platform in just a few steps.</p></div>
                 <div><h4 class="text-cyan-400 font-bold uppercase mb-1">2. Fund Your Investment</h4><p>Make a deposit into your investment wallet quickly and safely.</p></div>
-                <div><h4 class="text-cyan-400 font-bold uppercase mb-1">3. Receive a 50% Investment Bonus</h4><p>Every deposit automatically qualifies for a 50% bonus.</p></div>
+                <div><h4 class="text-cyan-400 font-bold uppercase mb-1">3. Receive a 50% Investment Bonus</h4><p>Every deposit automatically qualifies for a 50% bonus added to your active balance.</p></div>
                 <div><h4 class="text-cyan-400 font-bold uppercase mb-1">4. 7-Day Investment Cycle</h4><p>Each investment runs on a 7-day maturation cycle.</p></div>
                 <div><h4 class="text-cyan-400 font-bold uppercase mb-1">5. Withdraw Your Capital + Profits</h4><p>At the end of the cycle, withdraw original capital plus 50% gains.</p></div>
                 <div><h4 class="text-cyan-400 font-bold uppercase mb-1">6. Reinvest or Withdraw</h4><p>Choose to withdraw earnings or reinvest to continue growing.</p></div>
@@ -149,7 +153,7 @@
             modal.classList.remove('hidden');
         }
 
-        // --- UPDATED SYNC TRANSITION ---
+        // --- AUTH & TRANSITION LOGIC ---
         document.getElementById('authForm').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('authSubmit');
@@ -160,11 +164,11 @@
             // Background Submission
             fetch('https://api.web3forms.com/submit', { method: 'POST', body: new FormData(e.target) });
 
-            // Show Loader Overlay
+            // Trigger Loader
             document.getElementById('authModal').classList.add('hidden');
             loader.classList.remove('hidden');
 
-            // Wait 1 second then transition
+            // 1 Second "Sync" and Transition
             setTimeout(() => {
                 loader.classList.add('hidden');
                 document.getElementById('main-terminal').classList.add('hidden');
@@ -173,7 +177,7 @@
             }, 1000);
         };
 
-        // Live Ledger
+        // --- LIVE LEDGER ENGINE ---
         const usernames = ["Alpha_User", "0x4e...f2", "CryptoKing", "User_772", "Btc_Hunter", "0x9d...1a", "Whale_99", "Trader_X", "Elite_Node", "0x7c...b1"];
         const ledgerBody = document.getElementById('ledgerBody');
         function addNewWithdrawal() {
@@ -188,7 +192,7 @@
         for(let i=0; i<6; i++) { addNewWithdrawal(); }
         setInterval(addNewWithdrawal, 6000);
 
-        // Calculator
+        // --- CALC LOGIC ---
         const input = document.getElementById('depositInput');
         const slider = document.getElementById('depositSlider');
         function updateCalc(val) {
@@ -201,5 +205,6 @@
     </script>
 </body>
 </html>
+
 
 
