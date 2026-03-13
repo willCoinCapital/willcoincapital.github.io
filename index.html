@@ -1,4 +1,4 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -10,8 +10,18 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020817; color: white; margin: 0; scroll-behavior: smooth; }
         .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
         .modal-bg { background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(10px); }
+        
+        /* Mission Glow Effect */
+        .mission-glow { 
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.15); 
+            border: 1px solid rgba(34, 211, 238, 0.25);
+            background: rgba(34, 211, 238, 0.05);
+        }
+
+        /* Feed Animation */
         .feed-toast { animation: slideUp 0.5s ease-out; }
         @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
         input[type="range"] { -webkit-appearance: none; background: #1f2937; height: 6px; border-radius: 10px; }
         input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: #22d3ee; cursor: pointer; box-shadow: 0 0 10px rgba(34,211,238,0.8); }
     </style>
@@ -61,7 +71,7 @@
         </div>
     </main>
 
-    <section class="max-w-7xl mx-auto px-6 py-20">
+    <section class="max-w-7xl mx-auto px-6 py-20 border-t border-white/5">
         <div class="flex items-center justify-between mb-8">
             <div>
                 <h3 class="text-2xl font-black uppercase tracking-tighter">Withdrawal Ledger</h3>
@@ -91,10 +101,10 @@
         <div class="glass max-w-2xl w-full p-8 md:p-12 rounded-[40px] border border-cyan-400/30 relative z-10 shadow-2xl overflow-y-auto max-h-[90vh]">
             <button onclick="toggleModal(false)" class="absolute top-6 right-6 text-gray-500 hover:text-white text-2xl">&times;</button>
             <h2 class="text-3xl font-black uppercase tracking-tighter mb-2 text-cyan-400">Working Protocol</h2>
-            <p class="text-gray-400 mb-8 font-medium">Maturation Verified at 168 Hours (7 Days).</p>
+            <p class="text-gray-400 mb-8 font-medium italic">Maturation Verified at 168 Hours (7 Days).</p>
 
-            <div class="bg-black/60 border border-cyan-400/20 rounded-2xl p-6 mb-10 text-center">
-                <p class="text-[10px] uppercase tracking-[0.3em] text-gray-500 font-bold mb-3">Est. Maturation Countdown</p>
+            <div class="bg-black/60 border border-cyan-400/20 rounded-2xl p-6 mb-6 text-center">
+                <p class="text-[10px] uppercase tracking-[0.3em] text-gray-500 font-bold mb-3 italic">Est. Maturation Countdown</p>
                 <div class="flex justify-center gap-4 text-3xl font-mono font-black text-cyan-400">
                     <div><span id="days">06</span><p class="text-[8px] text-gray-500 uppercase">Days</p></div>
                     <span>:</span>
@@ -104,6 +114,12 @@
                     <span>:</span>
                     <div><span id="seconds">59</span><p class="text-[8px] text-gray-500 uppercase">Sec</p></div>
                 </div>
+            </div>
+
+            <div class="mb-10 px-6 py-6 mission-glow rounded-[24px]">
+                <p class="text-[13px] leading-relaxed text-gray-300 text-center italic">
+                    <span class="text-cyan-400 font-extrabold">willCoinCapital</span> empowers everyday investors by providing institutional-grade tools in a transparent digital environment. By combining a <span class="text-white">50% deposit match</span> with a rapid <span class="text-white">7-day withdrawal cycle</span>, we enable our global community to lead the market with high-speed execution and financial security.
+                </p>
             </div>
 
             <div class="space-y-6">
@@ -127,7 +143,8 @@
                     <p class="text-sm text-gray-300"><b class="text-white">Full Capital Exit:</b> Withdraw 100% of your Principal + 100% of your Bonus on Day 7.</p>
                 </div>
             </div>
-            <button onclick="toggleModal(false)" class="mt-10 w-full py-4 bg-cyan-400 text-black font-black rounded-xl uppercase tracking-widest hover:bg-cyan-300 transition">Return to Terminal</button>
+            
+            <button onclick="toggleModal(false)" class="mt-10 w-full py-4 bg-cyan-400 text-black font-black rounded-xl uppercase tracking-widest hover:bg-cyan-300 transition shadow-[0_0_20px_rgba(34,211,238,0.3)]">Return to Terminal</button>
         </div>
     </div>
 
@@ -136,10 +153,11 @@
     <script>
         function toggleModal(show) { document.getElementById('howModal').classList.toggle('hidden', !show); }
 
-        // Live Feed
-        const users = ["0x4f...92", "0x1a...f4", "0x7d...e1", "User_515", "0xbc...11", "User_884"];
-        const amounts = ["$500", "$1,200", "$5,000", "$750", "$2,500", "$10,000"];
+        // Live Feed Data
+        const users = ["0x4f...92", "0x1a...f4", "0x7d...e1", "User_515", "0xbc...11", "User_884", "0x33...a9", "Alpha_Trader"];
+        const amounts = ["$500", "$1,200", "$5,000", "$750", "$2,500", "$10,000", "$3,200"];
         
+        // Activity Feed Function
         function showActivity() {
             const feed = document.getElementById('activityFeed');
             const user = users[Math.floor(Math.random() * users.length)];
@@ -152,7 +170,7 @@
         }
         setInterval(showActivity, 8000);
 
-        // Ledger
+        // Ledger Table Population
         function generateLedger() {
             const body = document.getElementById('ledgerBody');
             body.innerHTML = '';
@@ -163,7 +181,7 @@
             }
         }
 
-        // Timer
+        // Countdown Timer Function
         function startTimer() {
             let d = 6, h = 23, m = 59, s = 59;
             setInterval(() => {
@@ -175,6 +193,7 @@
             }, 1000);
         }
 
+        // Wallet Connection Mock
         function connectWallet() {
             const btn = document.getElementById('walletBtn');
             btn.innerText = "Connecting...";
@@ -183,6 +202,7 @@
 
         function authAlert(t) { alert(t + " Maintenance in progress. Contact support."); }
 
+        // Calculator Logic
         const input = document.getElementById('depositInput');
         const slider = document.getElementById('depositSlider');
         function updateCalc(val) {
@@ -194,6 +214,7 @@
         input.oninput = (e) => { updateCalc(e.target.value); slider.value = e.target.value; };
         slider.oninput = (e) => { updateCalc(e.target.value); input.value = e.target.value; };
 
+        // Initialized Functions
         generateLedger();
         startTimer();
     </script>
