@@ -17,3 +17,12 @@ alert("Invalid login details")
 }
 
 }
+
+function logout(){
+
+localStorage.removeItem("willcoinLoggedIn")
+localStorage.removeItem("willcoinUser")
+
+window.location.href = "login.html"
+
+}
