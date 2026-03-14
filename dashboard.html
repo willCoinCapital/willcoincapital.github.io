@@ -3,29 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Dashboard</title>
+    <title>WillCoin Capital</title>
     <style>
-        body { background-color: #0b0e11; color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 20px; }
-        .terminal-header { 
-            background: rgba(255,255,255,0.05); 
-            border: 1px solid #1e2329; 
-            border-radius: 15px; 
-            padding: 15px; 
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .status-text { color: #00d2ff; font-weight: bold; text-transform: uppercase; }
-        .card { background: #161a1e; border-radius: 20px; padding: 30px; margin-bottom: 15px; border: 1px solid #2b3139; }
-        .label { color: #848e9c; font-size: 12px; text-transform: uppercase; margin-bottom: 10px; }
+        body { background-color: #0b0e11; color: #fff; font-family: sans-serif; margin: 0; padding: 20px; }
+        
+        /* THE HEADER SECTION */
+        .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .user-title { color: #00d2ff; font-weight: bold; font-style: italic; font-size: 20px; text-transform: uppercase; display: flex; align-items: center; }
+        .user-title::before { content: "●"; color: #00d2ff; margin-right: 10px; font-style: normal; }
+        .sign-out { color: #848e9c; font-size: 12px; text-decoration: none; text-transform: uppercase; }
+
+        /* THE CARDS */
+        .card { background: #111418; border-radius: 20px; padding: 25px; margin-bottom: 15px; border: 1px solid #1e2329; }
+        .label { color: #5e6673; font-size: 11px; text-transform: uppercase; margin-bottom: 10px; }
         .value { font-size: 32px; font-weight: bold; }
-        .bonus-value { color: #00d2ff; }
-        .status-awaiting { color: #f6465d; font-weight: bold; }
+        .bonus-color { color: #00d2ff; }
+        .status-orange { color: #f07d0b; font-weight: bold; text-transform: uppercase; }
+
+        /* FOOTER AREA */
+        .footer-content { text-align: center; margin-top: 50px; }
+        .footer-text { color: #848e9c; font-size: 13px; }
+        .live-support { background: #32d4e4; color: #000; padding: 10px 25px; border-radius: 30px; font-weight: bold; display: inline-block; margin-top: 15px; }
     </style>
 </head>
 <body>
 
-    <div class="terminal-header">
-        TERMINAL SYNCED: <span id="welcome-msg" class="status-text">WELCOME BACK</span>
+    <div class="top-nav">
+        <div class="user-title" id="displayUsername">USER DASHBOARD</div>
+        <a href="index.html" class="sign-out">Sign Out</a>
     </div>
 
     <div class="card">
@@ -35,27 +40,29 @@
 
     <div class="card">
         <div class="label">Unlocked Bonus</div>
-        <div class="value bonus-value">$0.00</div>
+        <div class="value bonus-color">$0.00</div>
     </div>
 
     <div class="card">
         <div class="label">Cycle Status</div>
-        <div class="status-awaiting">AWAITING ACTIVATION</div>
+        <div class="status-orange">Awaiting Activation</div>
+    </div>
+
+    <div class="footer-content">
+        <h2 style="margin-bottom: 5px;">AWAITING ACTIVATION</h2>
+        <div class="live-support">● LIVE SUPPORT</div>
+        <p class="footer-text">Your account is successfully registered.</p>
     </div>
 
     <script>
-        // This runs automatically when the page loads
+        // This is the "magic" that replaces the text
         window.onload = function() {
-            const name = localStorage.getItem('storedUsername');
-            const displayElement = document.getElementById('welcome-msg');
-            
-            if (name) {
-                displayElement.innerText = `WELCOME BACK, ${name.toUpperCase()}`;
-            } else {
-                // If they didn't log in, send them back to the login page
-                window.location.href = "index.html";
+            const savedName = localStorage.getItem('myUsername');
+            if (savedName) {
+                document.getElementById('displayUsername').innerText = savedName;
             }
         };
     </script>
 </body>
 </html>
+
