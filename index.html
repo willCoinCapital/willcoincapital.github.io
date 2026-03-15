@@ -18,12 +18,12 @@
         input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: #22d3ee; cursor: pointer; box-shadow: 0 0 15px rgba(34,211,238,0.7); }
         .support-float { position: fixed; bottom: 32px; right: 32px; z-index: 1000; }
         
-        /* Animation for live ledger updates */
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* Smooth Animation for 5-row live stream */
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
         }
-        .new-row { animation: fadeInDown 0.6s ease-out forwards; }
+        .new-row { animation: slideIn 0.5s ease-out forwards; }
     </style>
 </head>
 <body>
@@ -158,7 +158,7 @@
             }, 600);
         };
 
-        // --- LIVE LEDGER ENGINE ---
+        // --- UPDATED: 5-ROW LIVE LEDGER ENGINE ---
         const usernames = ["Alpha_User", "0x4e...f2", "CryptoKing", "User_772", "Btc_Hunter", "0x9d...1a", "Whale_99", "Trader_X", "Elite_Node", "0x7c...b1"];
         const ledgerBody = document.getElementById('ledgerBody');
 
@@ -172,13 +172,21 @@
                 <td class="px-8 py-5 font-bold text-white">$${amount}</td>
                 <td class="px-8 py-5 text-right"><span class="bg-green-500/10 text-green-400 px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-widest">Completed</span></td>
             `;
+            
+            // Insert at the top
             ledgerBody.prepend(row);
-            if (ledgerBody.children.length > 8) { ledgerBody.lastElementChild.remove(); }
+            
+            // Strictly maintain only 5 rows
+            while (ledgerBody.children.length > 5) { 
+                ledgerBody.lastElementChild.remove(); 
+            }
         }
 
-        // Initialize and start cycle
-        for(let i=0; i<6; i++) { addNewWithdrawal(); }
-        setInterval(addNewWithdrawal, 6000);
+        // Initialize with exactly 5 rows
+        for(let i=0; i<5; i++) { addNewWithdrawal(); }
+        
+        // Refresh a row every 4 seconds for a "live stream" feel
+        setInterval(addNewWithdrawal, 4000);
 
         // Profit Projection Calculator
         const input = document.getElementById('depositInput');
