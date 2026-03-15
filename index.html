@@ -1,337 +1,228 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>willCoinCapital | Terminal</title>
 
-<script src="https://cdn.tailwindcss.com"></script>
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>willCoin Capital</title>
+
+<link rel="stylesheet" href="style.css">
+
+<script src="script.js" defer></script>
 
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-<style>
-
-body{
-font-family:'Plus Jakarta Sans',sans-serif;
-background-color:#020817;
-color:white;
-margin:0;
-overflow-x:hidden;
-width:100%;
-}
-
-.glass{
-background:rgba(255,255,255,0.03);
-backdrop-filter:blur(12px);
-border:1px solid rgba(255,255,255,0.1);
-}
-
-.glass-cyan{
-background:rgba(34,211,238,0.03);
-backdrop-filter:blur(12px);
-border:1px solid rgba(34,211,238,0.3);
-}
-
-.btn-glow{
-box-shadow:0 0 20px rgba(34,211,238,0.4);
-}
-
-.modal-bg{
-background:rgba(0,0,0,0.95);
-backdrop-filter:blur(10px);
-}
-
-#dashboard.hidden,#main-terminal.hidden,#loader.hidden{
-display:none!important;
-}
-
-#sidebar{
-transition:transform .3s ease-in-out;
-z-index:1500;
-}
-
-.sidebar-overlay{
-background:rgba(0,0,0,0.8);
-backdrop-filter:blur(4px);
-z-index:1400;
-opacity:0;
-pointer-events:none;
-transition:opacity .3s;
-}
-
-.sidebar-open .sidebar-overlay{
-opacity:1;
-pointer-events:auto;
-}
-
-.sidebar-open #sidebar{
-transform:translateX(0);
-}
-
-@keyframes fadeIn{
-from{opacity:0;transform:translateY(10px)}
-to{opacity:1;transform:translateY(0)}
-}
-
-.animate-fade{
-animation:fadeIn .5s ease-out forwards;
-}
-
-.spinner{
-border:3px solid rgba(34,211,238,0.1);
-border-top:3px solid #22d3ee;
-border-radius:50%;
-width:40px;
-height:40px;
-animation:spin 1s linear infinite;
-}
-
-@keyframes spin{
-0%{transform:rotate(0deg)}
-100%{transform:rotate(360deg)}
-}
-
-</style>
 </head>
+
 
 <body>
 
-<div id="sidebarOverlay" class="sidebar-overlay fixed inset-0" onclick="toggleSidebar(false)"></div>
+<!-- NAVBAR -->
 
-<div id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-[#020817] border-r border-white/10 -translate-x-full">
+<nav class="navbar">
 
-<div class="p-8 flex flex-col h-full">
-
-<div class="flex items-center gap-3 mb-12">
-<div class="w-6 h-6 bg-cyan-400 rounded-full"></div>
-<span class="font-black italic text-sm tracking-tighter">WILLCOIN</span>
+<div class="logo">
+<div class="dot"></div>
+<span>willCoin</span>
 </div>
 
-<nav class="space-y-2 flex-grow">
+<div class="nav-buttons">
 
-<a href="#" class="flex items-center gap-4 p-4 rounded-xl bg-cyan-400/10 text-cyan-400 border border-cyan-400/20">
-<span class="text-xs font-bold uppercase tracking-widest">Dashboard</span>
-</a>
+<button onclick="openAuth()">Login</button>
 
-<a href="#" class="flex items-center gap-4 p-4 rounded-xl text-gray-500 hover:bg-white/5 transition-all">
-<span class="text-xs font-bold uppercase tracking-widest">Wallets</span>
-</a>
+<button class="signup" onclick="openAuth()">Sign Up</button>
 
-<a href="#" class="flex items-center gap-4 p-4 rounded-xl text-gray-500 hover:bg-white/5 transition-all">
-<span class="text-xs font-bold uppercase tracking-widest">Market</span>
-</a>
-
-<a href="#" class="flex items-center gap-4 p-4 rounded-xl text-gray-500 hover:bg-white/5 transition-all">
-<span class="text-xs font-bold uppercase tracking-widest">Security</span>
-</a>
-
-</nav>
-
-<button onclick="handleSignOut()" class="mt-auto p-4 text-red-500 text-xs uppercase font-bold">
-Sign Out
-</button>
-
-</div>
-</div>
-
-<div id="main-terminal">
-
-<nav class="flex items-center justify-between px-6 py-6 max-w-7xl mx-auto">
-
-<div class="flex items-center gap-2">
-<div class="w-5 h-5 bg-cyan-400 rounded-full"></div>
-<span class="font-black italic text-xs tracking-tighter">WILLCOIN</span>
-</div>
-
-<div class="flex items-center gap-3">
-<button onclick="toggleAuth('login')" class="text-[9px] font-bold uppercase text-gray-400">Login</button>
-<button onclick="toggleAuth('signup')" class="px-4 py-2 bg-cyan-400 text-black rounded-lg text-[9px] font-black uppercase btn-glow">Sign Up</button>
 </div>
 
 </nav>
 
-<main class="max-w-7xl mx-auto px-5 py-6 text-center">
 
-<h1 class="text-3xl md:text-7xl font-extrabold mb-6 tracking-tighter uppercase leading-[1.1]">
-MAXIMIZE YOUR CRYPTO POTENTIAL
+<!-- CRYPTO TICKER -->
+
+<div class="ticker">
+
+<div class="ticker-move">
+
+<span>BTC $64,820 ▲2.3%</span>
+<span>ETH $3,410 ▲1.8%</span>
+<span>BNB $602 ▲1.1%</span>
+<span>SOL $142 ▲3.6%</span>
+<span>XRP $0.62 ▲0.7%</span>
+<span>ADA $0.71 ▲1.2%</span>
+
+</div>
+
+</div>
+
+
+
+<!-- HERO -->
+
+<section class="hero">
+
+<h1>
+
+Maximize Your Crypto Potential
+
 <br>
-<span class="text-cyan-400">WILLCOINCAPITAL</span>
+
+<span>willCoin Capital</span>
+
 </h1>
 
-<div class="glass max-w-xl mx-auto p-10 rounded-[30px] mb-16">
+<p>
 
-<h2 class="text-cyan-400 font-black uppercase text-xs mb-6">Profit Projection</h2>
+Secure cryptocurrency investment platform designed for global digital asset growth.
 
-<input type="number" id="depositInput" value="1000" class="w-full bg-black/30 rounded-xl p-4 text-center text-2xl font-bold">
-
-<div class="flex justify-between mt-6 text-sm">
-
-<div>
-<p class="text-gray-400">Invest</p>
-<p id="displayInvest">$1000</p>
-</div>
-
-<div>
-<p class="text-cyan-400">Bonus</p>
-<p id="displayBonus">$500</p>
-</div>
-
-<div>
-<p class="text-gray-400">Total</p>
-<p id="displayTotal">$1500</p>
-</div>
-
-</div>
-
-</div>
-
-<section class="max-w-4xl mx-auto pb-20">
-
-<h3 class="text-sm font-black uppercase mb-6">Withdrawal Ledger</h3>
-
-<div class="glass rounded-xl p-6">
-<table class="w-full">
-<tbody id="ledgerBody"></tbody>
-</table>
-</div>
-
-</section>
-
-<section class="max-w-6xl mx-auto py-20 text-center">
-
-<h2 class="text-3xl font-extrabold uppercase mb-6">About willCoin Capital</h2>
-
-<p class="text-gray-400 max-w-2xl mx-auto text-sm">
-willCoin Capital is a digital asset investment platform designed for
-secure cryptocurrency portfolio growth and reliable investment cycles.
 </p>
 
 </section>
 
-<section class="max-w-6xl mx-auto py-20">
 
-<h2 class="text-3xl text-center font-extrabold uppercase mb-16">
-How It Works
-</h2>
 
-<div class="grid md:grid-cols-3 gap-8">
+<!-- PLATFORM STATS -->
 
-<div class="glass p-8 rounded-3xl text-center">
-<h3 class="text-cyan-400 font-black text-sm mb-3 uppercase">Create Account</h3>
-<p class="text-gray-400 text-sm">Register and access your investment dashboard.</p>
+<section class="stats">
+
+<div class="card">
+<p>Total Investors</p>
+<h2>18,421</h2>
 </div>
 
-<div class="glass p-8 rounded-3xl text-center">
-<h3 class="text-cyan-400 font-black text-sm mb-3 uppercase">Deposit Crypto</h3>
-<p class="text-gray-400 text-sm">Fund your account with supported assets.</p>
+<div class="card">
+<p>Total Deposited</p>
+<h2>$8.4M</h2>
 </div>
 
-<div class="glass p-8 rounded-3xl text-center">
-<h3 class="text-cyan-400 font-black text-sm mb-3 uppercase">Earn Profit</h3>
-<p class="text-gray-400 text-sm">Withdraw capital and profit after the cycle.</p>
+<div class="card">
+<p>Total Withdrawn</p>
+<h2>$6.1M</h2>
+</div>
+
+<div class="card">
+<p>Active Accounts</p>
+<h2>9,732</h2>
+</div>
+
+</section>
+
+
+
+<!-- PROFIT CALCULATOR -->
+
+<section class="calculator">
+
+<h3>Profit Projection</h3>
+
+<input type="number" id="depositInput" value="1000">
+
+<div class="results">
+
+<div>
+<p>Invest</p>
+<h4 id="invest">$1000</h4>
+</div>
+
+<div>
+<p>Bonus</p>
+<h4 id="bonus">$500</h4>
+</div>
+
+<div>
+<p>Total</p>
+<h4 id="total">$1500</h4>
 </div>
 
 </div>
 
 </section>
 
-<section class="max-w-4xl mx-auto py-20 text-center">
 
-<h2 class="text-3xl font-extrabold uppercase mb-10">Investment Plan</h2>
 
-<div class="glass p-10 rounded-3xl">
+<!-- WITHDRAWAL LEDGER -->
 
-<h3 class="text-cyan-400 font-black text-lg mb-6 uppercase">7 Day Growth Plan</h3>
+<section class="ledger">
 
-<div class="grid grid-cols-2 gap-6 text-sm text-gray-300">
+<h3>Withdrawal Ledger</h3>
 
-<div>Minimum Deposit</div>
-<div class="text-right">$100</div>
+<table>
 
-<div>Maximum Deposit</div>
-<div class="text-right">$50,000</div>
+<tbody id="ledgerBody"></tbody>
 
-<div>Return</div>
-<div class="text-right text-cyan-400 font-bold">50% Profit</div>
+</table>
 
-<div>Duration</div>
-<div class="text-right">7 Days</div>
+</section>
 
+
+
+<!-- HOW IT WORKS -->
+
+<section class="how">
+
+<h2>How It Works</h2>
+
+<div class="steps">
+
+<div class="step">
+<h4>Create Account</h4>
+<p>Register your secure investment account.</p>
 </div>
 
-<button onclick="toggleAuth('signup')" class="mt-10 px-8 py-4 bg-cyan-400 text-black rounded-xl font-black uppercase text-xs btn-glow">
-Start Investing
-</button>
+<div class="step">
+<h4>Deposit Crypto</h4>
+<p>Fund your portfolio with supported assets.</p>
+</div>
+
+<div class="step">
+<h4>Earn Profit</h4>
+<p>Withdraw capital and earnings.</p>
+</div>
 
 </div>
 
 </section>
 
-<section class="max-w-5xl mx-auto py-20 text-center">
 
-<h2 class="text-3xl font-extrabold uppercase mb-12">Supported Assets</h2>
 
-<div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm font-bold">
+<!-- SUPPORTED ASSETS -->
 
-<div class="glass p-6 rounded-2xl">Bitcoin</div>
-<div class="glass p-6 rounded-2xl">Ethereum</div>
-<div class="glass p-6 rounded-2xl">Tether</div>
-<div class="glass p-6 rounded-2xl">BNB</div>
+<section class="assets">
+
+<h2>Supported Assets</h2>
+
+<div class="coins">
+
+<div>Bitcoin</div>
+<div>Ethereum</div>
+<div>Tether</div>
+<div>BNB</div>
 
 </div>
 
 </section>
 
-<footer class="border-t border-white/5 py-10 text-center text-gray-500 text-xs">
-© 2026 willCoin Capital. All rights reserved.
+
+
+<footer>
+
+© 2026 willCoin Capital
+
 </footer>
 
-</main>
+
+
+<!-- DEPOSIT POPUP -->
+
+<div id="depositPopup" class="deposit-popup">
+
+<p id="depositText"></p>
+
 </div>
 
-<script>
 
-const users=["Alpha_User","Trader_X","Whale99","CryptoKing"];
-
-function addRow(){
-
-const body=document.getElementById("ledgerBody");
-
-const user=users[Math.floor(Math.random()*users.length)];
-
-const amt=(Math.floor(Math.random()*5000)+500).toLocaleString();
-
-const row=document.createElement("tr");
-
-row.innerHTML=`<td class="py-3 text-gray-400">${user}</td>
-<td class="py-3 font-bold">$${amt}</td>
-<td class="py-3 text-green-400 text-right">Paid</td>`;
-
-body.prepend(row);
-
-if(body.children.length>6) body.lastElementChild.remove();
-
-}
-
-for(let i=0;i<4;i++) addRow();
-
-setInterval(addRow,5000);
-
-const inp=document.getElementById("depositInput");
-
-inp.oninput=(e)=>{
-
-let v=e.target.value;
-
-document.getElementById("displayInvest").innerText="$"+v;
-
-document.getElementById("displayBonus").innerText="$"+(v*0.5);
-
-document.getElementById("displayTotal").innerText="$"+(v*1.5);
-
-};
-
-</script>
 
 </body>
+
 </html>
