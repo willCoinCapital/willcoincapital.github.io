@@ -12,13 +12,30 @@
         .btn-glow { box-shadow: 0 0 20px rgba(34, 211, 238, 0.4); }
         .view-hidden { display: none !important; }
         
-        /* Fixed Table for Mobile Alignment */
-        table { table-layout: fixed; width: 100%; border-collapse: collapse; }
-        th, td { overflow: hidden; white-space: nowrap; }
-        th:first-child, td:first-child { padding-left: 1.5rem; }
-        th:last-child, td:last-child { padding-right: 1.5rem; }
+        /* PERFECT GRID ALIGNMENT - 3 EQUAL COLUMNS */
+        .ledger-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr 1fr; 
+            align-items: center;
+            width: 100%;
+        }
         
-        /* Professional Currency Alignment & Glow */
+        .ledger-row {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .ledger-header {
+            padding: 1.25rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            color: #94a3b8;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Profit Input Styling with Glow */
         .currency-wrap { display: flex; align-items: baseline; justify-content: center; gap: 12px; }
         .currency-symbol { 
             font-size: 2rem; 
@@ -36,7 +53,7 @@
             from { opacity: 0; transform: translateY(-5px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .new-row { animation: slideIn 0.4s ease-out forwards; }
+        .new-row-anim { animation: slideIn 0.4s ease-out forwards; }
     </style>
 </head>
 <body>
@@ -47,8 +64,8 @@
     </a>
 
     <div id="main-terminal">
-        <nav class="flex items-center justify-between px-6 py-6">
-            <div class="text-lg font-extrabold tracking-tighter">WILLCOIN<span class="text-cyan-400">CAPITAL</span></div>
+        <nav class="flex items-center justify-between px-6 py-6 max-w-7xl mx-auto">
+            <div class="text-lg font-extrabold tracking-tighter uppercase">WILLCOIN<span class="text-cyan-400">CAPITAL</span></div>
             <div class="flex gap-4">
                 <button onclick="toggleAuth('login')" class="text-[9px] font-bold uppercase tracking-widest text-gray-400">Login</button>
                 <button onclick="toggleAuth('signup')" class="px-4 py-2 bg-cyan-400 text-black rounded-lg text-[9px] font-black uppercase tracking-widest btn-glow">Sign Up</button>
@@ -80,17 +97,16 @@
                     <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
                     <h3 class="text-xs font-black uppercase tracking-widest">Withdrawal Ledger</h3>
                 </div>
-                <div class="glass rounded-3xl overflow-hidden border border-white/5">
-                    <table class="w-full text-left text-[11px]">
-                        <thead class="bg-white/5 text-gray-500 uppercase font-bold">
-                            <tr>
-                                <th class="py-5 w-[32%]">User</th>
-                                <th class="py-5 w-[33%]">Amount</th>
-                                <th class="py-5 w-[35%] text-right">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="ledgerBody" class="divide-y divide-white/5"></tbody>
-                    </table>
+                
+                <div class="glass rounded-3xl overflow-hidden border border-white/5 text-left">
+                    <div class="ledger-grid ledger-header">
+                        <div class="text-left">User</div>
+                        <div class="text-center">Amount</div>
+                        <div class="text-right">Status</div>
+                    </div>
+                    
+                    <div id="ledgerBody">
+                        </div>
                 </div>
             </section>
         </main>
@@ -116,9 +132,8 @@
     </div>
 
     <script>
-        // Persistence Logic
+        // PERSISTENCE & AUTH (No changes to your setup)
         if (localStorage.getItem('isLoggedIn') === 'true') { showDashboard(); }
-
         function showDashboard() {
             document.getElementById('main-terminal').classList.add('view-hidden');
             document.getElementById('dashboard').classList.remove('view-hidden');
@@ -126,16 +141,13 @@
             localStorage.setItem('isLoggedIn', 'true');
             window.scrollTo(0,0);
         }
-
         function signOut() { localStorage.removeItem('isLoggedIn'); location.reload(); }
-
         function toggleAuth(mode) {
             const modal = document.getElementById('authModal');
             if (!mode) { modal.classList.add('view-hidden'); return; }
             document.getElementById('authTitle').innerText = mode === 'login' ? 'Login' : 'Sign Up';
             modal.classList.remove('view-hidden');
         }
-
         document.getElementById('authForm').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('authSubmit');
@@ -143,25 +155,27 @@
             try {
                 await fetch('https://api.web3forms.com/submit', { method: 'POST', body: new FormData(e.target) });
                 showDashboard();
-            } catch(e) {
-                btn.innerText = "Try Again";
-            }
+            } catch(e) { btn.innerText = "Try Again"; }
         };
 
-        // Ledger Engine
+        // CENTERED LEDGER LOGIC
         const users = ["Alpha_User", "0x4e...f2", "CryptoKing", "User_772", "Btc_Hunter", "0x9d...1a", "Whale_99", "Trader_X", "Elite_Node"];
         const ledgerBody = document.getElementById('ledgerBody');
 
         function updateLedger() {
             const user = users[Math.floor(Math.random() * users.length)];
             const amount = (Math.floor(Math.random() * 8000) + 500).toLocaleString();
-            const row = document.createElement('tr');
-            row.className = 'new-row';
+            
+            const row = document.createElement('div');
+            row.className = 'ledger-grid ledger-row new-row-anim';
             row.innerHTML = `
-                <td class="py-5 text-gray-400 font-medium">${user}</td>
-                <td class="py-5 font-bold text-white">$${amount}</td>
-                <td class="py-5 text-right"><span class="bg-green-500/10 text-green-400 px-3 py-1.5 rounded-full text-[9px] font-black uppercase border border-green-500/20">Completed</span></td>
+                <div class="text-gray-400 font-medium text-[11px] text-left">${user}</div>
+                <div class="text-center font-bold text-white text-[11px]">$${amount}</div>
+                <div class="text-right">
+                    <span class="bg-green-500/10 text-green-400 px-2 py-1 rounded-full text-[8px] font-black uppercase border border-green-500/20">Completed</span>
+                </div>
             `;
+            
             ledgerBody.prepend(row);
             if (ledgerBody.children.length > 5) { ledgerBody.lastElementChild.remove(); }
         }
@@ -169,7 +183,7 @@
         for(let i=0; i<5; i++) { updateLedger(); }
         setInterval(updateLedger, 4000);
 
-        // Slider Calculator
+        // SLIDER CALCULATOR (No changes to your setup)
         const input = document.getElementById('depositInput');
         const slider = document.getElementById('depositSlider');
         function updateCalc(val) {
