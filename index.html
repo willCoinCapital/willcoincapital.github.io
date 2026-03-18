@@ -1,159 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>willCoinCapital | Terminal v3.2</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>willCoinCapital | Ultra Terminal</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020817; color: white; margin: 0; overflow-x: hidden; }
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .btn-glow { box-shadow: 0 0 20px rgba(34, 211, 238, 0.4); }
-        .view-hidden { display: none !important; }
-        .bento-grid { display: grid; grid-template-columns: 1fr; gap: 1.25rem; max-width: 450px; margin: 0 auto; }
-        .stagger-in { animation: slideUp 0.6s ease-out forwards; opacity: 0; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .currency-symbol { font-size: 2.5rem; font-weight: 800; color: #22d3ee; }
-        .support-float { position: fixed; bottom: 20px; right: 20px; z-index: 1000; }
-    </style>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
+
+<style>
+body { font-family: 'Plus Jakarta Sans', sans-serif; background:#020617; color:white; }
+
+.glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(12px); border:1px solid rgba(255,255,255,0.1); }
+.btn-glow { box-shadow: 0 0 20px rgba(34,211,238,0.4); }
+.view-hidden { display:none; }
+
+@keyframes fadeUp {
+from {opacity:0; transform:translateY(30px);}
+to {opacity:1; transform:translateY(0);}
+}
+.fadeUp { animation: fadeUp 1s ease forwards; }
+
+.bg-glow {
+position:absolute;
+width:400px;height:400px;
+background:rgba(34,211,238,0.2);
+filter:blur(120px);
+top:10%;left:50%;
+transform:translateX(-50%);
+animation:pulse 6s infinite alternate;
+}
+@keyframes pulse {
+from {opacity:0.3;}
+to {opacity:0.8;}
+}
+</style>
 </head>
 
 <body>
 
-<!-- ===== TERMINAL (LOGIN PAGE) ===== -->
+<!-- LANDING -->
 <div id="main-terminal">
 
-    <nav class="flex items-center justify-between px-6 py-6">
-        <div class="text-md font-extrabold uppercase">WILLCOIN<span class="text-cyan-400">CAPITAL</span></div>
-        <div class="flex gap-3">
-            <button onclick="toggleAuth('login')" class="text-[8px] font-bold uppercase text-gray-400">Login</button>
-            <button onclick="toggleAuth('signup')" class="px-3 py-2 bg-cyan-400 text-black rounded-lg text-[8px] font-black uppercase btn-glow">Sign Up</button>
-        </div>
-    </nav>
+<nav class="flex justify-between p-6">
+<h2 class="font-extrabold">WILLCOIN<span class="text-cyan-400">CAPITAL</span></h2>
+<div class="flex gap-3 text-xs">
+<button onclick="toggleAuth('login')">LOGIN</button>
+<button onclick="toggleAuth('signup')" class="bg-cyan-400 text-black px-4 py-2 rounded-lg btn-glow">SIGN UP</button>
+</div>
+</nav>
 
-    <main class="px-4 pb-20 text-center">
-        <h1 class="text-2xl font-extrabold mb-8 uppercase">QUANTUM TERMINAL</h1>
-        <p class="text-gray-400 text-sm">Login to access your dashboard</p>
-    </main>
+<main class="text-center px-4 pb-24 relative">
 
+<div class="bg-glow"></div>
+
+<h1 class="text-4xl md:text-6xl font-extrabold mb-4 fadeUp">
+Quantum Trading Terminal
+</h1>
+
+<p class="text-gray-400 mb-8 fadeUp">
+Real-time crypto trading intelligence platform
+</p>
+
+<div class="flex justify-center gap-4 mb-12 fadeUp">
+<button onclick="toggleAuth('signup')" class="bg-cyan-400 text-black px-6 py-3 rounded-xl btn-glow">Get Started</button>
+<button onclick="toggleAuth('login')" class="border px-6 py-3 rounded-xl">Login</button>
 </div>
 
-<!-- ===== NEW DASHBOARD (AFTER LOGIN) ===== -->
+<!-- LIVE PRICES -->
+<div class="glass p-6 rounded-xl max-w-md mx-auto mb-8 fadeUp">
+<h3 class="text-xs text-gray-400 mb-2">LIVE MARKET</h3>
+<div class="flex justify-between">
+<span>BTC</span>
+<span id="btcPrice">$--</span>
+</div>
+<div class="flex justify-between">
+<span>ETH</span>
+<span id="ethPrice">$--</span>
+</div>
+</div>
+
+<!-- CHART -->
+<div class="glass p-4 rounded-xl max-w-md mx-auto fadeUp">
+<canvas id="chart"></canvas>
+</div>
+
+</main>
+</div>
+
+<!-- DASHBOARD -->
 <div id="dashboard" class="view-hidden min-h-screen flex bg-[#020617]">
 
-    <!-- Sidebar -->
-    <div class="w-60 bg-black p-6 hidden md:block">
-        <h2 class="text-cyan-400 font-black text-lg mb-10">willCoin</h2>
-        <ul class="space-y-4 text-xs uppercase font-bold text-gray-400">
-            <li>Dashboard</li>
-            <li>Wallet</li>
-            <li>Deposit</li>
-            <li>Withdraw</li>
-            <li>Transactions</li>
-            <li>Settings</li>
-        </ul>
-    </div>
-
-    <!-- Main -->
-    <div class="flex-1 p-6">
-
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-black">Welcome Back 👋</h2>
-            <button onclick="signOut()" class="text-xs text-red-400 font-bold">Sign Out</button>
-        </div>
-
-        <!-- Cards -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-
-            <div class="glass p-4 rounded-xl">
-                <p class="text-gray-400 text-[10px] uppercase">Total Balance</p>
-                <h2 class="text-lg font-bold text-cyan-400">$5,420</h2>
-            </div>
-
-            <div class="glass p-4 rounded-xl">
-                <p class="text-gray-400 text-[10px] uppercase">Bitcoin</p>
-                <h2 class="text-lg font-bold">0.15 BTC</h2>
-            </div>
-
-            <div class="glass p-4 rounded-xl">
-                <p class="text-gray-400 text-[10px] uppercase">Profit</p>
-                <h2 class="text-lg font-bold text-green-400">$820</h2>
-            </div>
-
-            <div class="glass p-4 rounded-xl">
-                <p class="text-gray-400 text-[10px] uppercase">Plan</p>
-                <h2 class="text-lg font-bold">7 Days</h2>
-            </div>
-
-        </div>
-
-        <!-- Actions -->
-        <div class="mb-6 flex gap-3">
-            <button class="bg-green-500 px-4 py-2 rounded-lg text-xs font-bold">Deposit</button>
-            <button class="bg-red-500 px-4 py-2 rounded-lg text-xs font-bold">Withdraw</button>
-        </div>
-
-        <!-- Transactions -->
-        <div class="glass p-4 rounded-xl">
-            <h3 class="text-sm font-bold mb-4">Recent Transactions</h3>
-            <table class="w-full text-xs">
-                <tr class="text-gray-400">
-                    <th>Date</th>
-                    <th>Type</th>
-                    <th>Amount</th>
-                    <th>Status</th>
-                </tr>
-                <tr>
-                    <td>Mar 18</td>
-                    <td>Deposit</td>
-                    <td>$500</td>
-                    <td class="text-green-400">Completed</td>
-                </tr>
-            </table>
-        </div>
-
-    </div>
+<div class="w-60 bg-black p-6 hidden md:block">
+<h2 class="text-cyan-400 font-bold mb-8">willCoin</h2>
+<ul class="space-y-4 text-xs text-gray-400">
+<li>Dashboard</li>
+<li>Wallet</li>
+<li>Deposit</li>
+<li>Withdraw</li>
+</ul>
 </div>
 
-<!-- ===== AUTH MODAL ===== -->
+<div class="flex-1 p-6">
+
+<div class="flex justify-between mb-6">
+<h2 class="text-xl font-bold">Welcome Back</h2>
+<button onclick="signOut()" class="text-red-400 text-xs">Sign Out</button>
+</div>
+
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+<div class="glass p-4 rounded-xl">
+<p class="text-xs text-gray-400">Balance</p>
+<h2 class="text-lg text-cyan-400">$5,420</h2>
+</div>
+
+<div class="glass p-4 rounded-xl">
+<p class="text-xs text-gray-400">BTC</p>
+<h2>0.15</h2>
+</div>
+
+<div class="glass p-4 rounded-xl">
+<p class="text-xs text-gray-400">Profit</p>
+<h2 class="text-green-400">$820</h2>
+</div>
+
+<div class="glass p-4 rounded-xl">
+<p class="text-xs text-gray-400">Plan</p>
+<h2>7 Days</h2>
+</div>
+
+</div>
+
+</div>
+</div>
+
+<!-- AUTH -->
 <div id="authModal" class="fixed inset-0 flex items-center justify-center view-hidden">
-    <div class="glass p-6 rounded-xl">
-        <h2 id="authTitle" class="text-lg mb-4">Login</h2>
-        <form id="authForm">
-            <input type="email" name="email" placeholder="Email" required class="block mb-3 p-2 w-full bg-black border">
-            <input type="password" name="password" placeholder="Password" required class="block mb-3 p-2 w-full bg-black border">
-            <button type="submit" id="authSubmit" class="bg-cyan-400 text-black px-4 py-2 w-full">Enter</button>
-        </form>
-    </div>
+<div class="glass p-6 rounded-xl">
+<form id="authForm">
+<input type="email" name="email" required placeholder="Email" class="block mb-2 p-2 bg-black">
+<input type="password" name="password" required placeholder="Password" class="block mb-2 p-2 bg-black">
+<button class="bg-cyan-400 px-4 py-2 w-full">Enter</button>
+</form>
+</div>
 </div>
 
-<!-- ===== SCRIPT (UNCHANGED LOGIN LOGIC) ===== -->
 <script>
-if (localStorage.getItem('isLoggedIn') === 'true') showDashboard();
+// AUTH
+if(localStorage.getItem('isLoggedIn')==='true') showDashboard();
 
-function showDashboard() {
-    document.getElementById('main-terminal').classList.add('view-hidden');
-    document.getElementById('dashboard').classList.remove('view-hidden');
-    document.getElementById('authModal').classList.add('view-hidden');
+function showDashboard(){
+document.getElementById('main-terminal').classList.add('view-hidden');
+document.getElementById('dashboard').classList.remove('view-hidden');
 }
 
-function signOut() {
-    localStorage.removeItem('isLoggedIn');
-    location.reload();
+function signOut(){
+localStorage.removeItem('isLoggedIn');
+location.reload();
 }
 
-function toggleAuth(mode) {
-    document.getElementById('authModal').classList.remove('view-hidden');
+function toggleAuth(){
+document.getElementById('authModal').classList.remove('view-hidden');
 }
 
-document.getElementById('authForm').onsubmit = (e) => {
-    e.preventDefault();
-    localStorage.setItem('isLoggedIn', 'true');
-    showDashboard();
+document.getElementById('authForm').onsubmit=(e)=>{
+e.preventDefault();
+localStorage.setItem('isLoggedIn','true');
+showDashboard();
 };
+
+// REAL API PRICE
+async function loadPrices(){
+const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd");
+const data = await res.json();
+document.getElementById('btcPrice').innerText = "$"+data.bitcoin.usd.toLocaleString();
+document.getElementById('ethPrice').innerText = "$"+data.ethereum.usd.toLocaleString();
+}
+setInterval(loadPrices,5000);
+loadPrices();
+
+// CHART
+const ctx = document.getElementById('chart');
+new Chart(ctx,{
+type:'line',
+data:{
+labels:["1","2","3","4","5","6","7"],
+datasets:[{
+data:[64000,64200,64100,64500,65000,64800,65200],
+borderColor:'#22d3ee',
+fill:false
+}]
+},
+options:{
+plugins:{legend:{display:false}},
+scales:{x:{display:false},y:{display:false}}
+}
+});
 </script>
 
 </body>
