@@ -1,80 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>w illCoin Capital Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>willCoin Capital Login</title>
+    <style>
+        body {
+            background: #0b0f1a;
+            font-family: Arial;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
 
-<style>
+        .login-box {
+            background: #111827;
+            padding: 40px;
+            border-radius: 12px;
+            width: 300px;
+            text-align: center;
+            position: relative; /* Cross-check: Required for absolute positioning of logout btn */
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
 
-body{
-background:#0b0f1a;
-font-family:Arial;
-color:white;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-}
+        /* The Logout Button */
+        .logout-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: #19d3ff;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
 
-.login-box{
-background:#111827;
-padding:40px;
-border-radius:12px;
-width:300px;
-text-align:center;
-}
+        .logout-btn:hover {
+            opacity: 1;
+        }
 
-input{
-width:100%;
-padding:12px;
-margin-top:10px;
-border:none;
-border-radius:6px;
-}
+        h2 {
+            margin-top: 10px;
+            font-size: 22px;
+            letter-spacing: -1px;
+        }
 
-button{
-width:100%;
-padding:12px;
-margin-top:20px;
-background:#19d3ff;
-border:none;
-border-radius:6px;
-font-weight:bold;
-cursor:pointer;
-}
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 6px;
+            background: #1f2937;
+            color: white;
+            box-sizing: border-box; /* Cross-check: Prevents input width overflow */
+        }
 
-a{
-color:#19d3ff;
-text-decoration:none;
-font-size:14px;
-}
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background: #19d3ff;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            color: #0b0f1a;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
 
-</style>
+        button:active {
+            transform: scale(0.98);
+        }
 
+        a {
+            color: #19d3ff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        p {
+            font-size: 13px;
+            color: #9ca3af;
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="login-box">
+    <div class="login-box">
+        <a href="index.html" class="logout-btn">Logout</a>
 
-<h2>w illCoin Capital</h2>
+        <h2>willCoin Capital</h2>
 
-<input type="text" id="username" placeholder="Username">
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
 
-<input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Login</button>
 
-<button onclick="login()">Login</button>
+        <p style="margin-top:20px;">
+            Don't have an account?  
+            <a href="signup.html">Sign up</a>
+        </p>
+    </div>
 
-<p style="margin-top:15px;">
-Don't have an account?  
-<a href="signup.html">Sign up</a>
-</p>
-
-</div>
-
-<script src="auth.js"></script>
+    <script src="auth.js"></script>
 
 </body>
 </html>
