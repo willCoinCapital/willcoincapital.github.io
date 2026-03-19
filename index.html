@@ -9,11 +9,31 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #000000; color: white; margin: 0; overflow: hidden; height: 100vh; }
         
+        /* PULSING ATMOSPHERIC GLOW */
         .main-aura {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 350px; height: 350px;
-            background: radial-gradient(circle, rgba(20, 184, 166, 0.2) 0%, rgba(34, 211, 238, 0) 70%);
-            filter: blur(50px); z-index: 1; pointer-events: none;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(20, 184, 166, 0.3) 0%, rgba(34, 211, 238, 0) 70%);
+            filter: blur(60px); z-index: 1; pointer-events: none;
+            animation: pulseGlow 6s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        /* UPGRADED GRADIENT TEXT */
+        .gradient-text {
+            background: linear-gradient(to right, #ffffff, #22d3ee, #ffffff);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 4s linear infinite;
+        }
+
+        @keyframes shine {
+            to { background-position: 200% center; }
         }
 
         .asset-card {
@@ -21,17 +41,16 @@
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 20px;
-            width: 70px; height: 70px;
+            width: 85px; height: 85px;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             position: absolute; animation: floatIcon 6s ease-in-out infinite; z-index: 10;
         }
 
         @keyframes floatIcon {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(2deg); }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
         }
 
-        .label-text { font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.3); margin-bottom: 6px; text-transform: lowercase; }
         .btn-recover { border: 1px solid rgba(20, 184, 166, 0.4); color: #14b8a6; }
         .btn-create { background: linear-gradient(to right, #14b8a6, #22d3ee); color: #000; box-shadow: 0 10px 30px -10px rgba(20, 184, 166, 0.5); }
         .view-hidden { display: none !important; }
@@ -41,52 +60,44 @@
 
     <div class="main-aura"></div>
 
-    <header class="text-center z-20 space-y-3">
-        <div class="text-[10px] font-bold text-gray-500 uppercase tracking-[0.4em]">willCoinCapital</div>
-        <div class="bg-white/5 border border-white/10 px-4 py-1 rounded-full text-[8px] font-black uppercase tracking-widest inline-block text-gray-400">
-            Trade crypto anytime
+    <header class="text-center z-20 space-y-4">
+        <div class="text-[10px] font-black text-cyan-500 uppercase tracking-[0.5em] drop-shadow-sm">willCoinCapital</div>
+        <div class="bg-white/5 border border-white/10 px-5 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-[0.2em] inline-block text-gray-300 backdrop-blur-md">
+            • Trade crypto anytime
         </div>
-        <h1 class="text-[32px] font-extrabold tracking-tight leading-tight text-white pt-2">
-            Power Up Your <br> Crypto Journey
+        <h1 class="text-[38px] font-[800] tracking-tighter leading-[0.95] text-white pt-4">
+            Power Up Your <br> 
+            <span class="gradient-text italic">Crypto Journey</span>
         </h1>
     </header>
 
     <div class="relative w-full h-72 z-10">
-        <div class="asset-card" style="top: 45%; left: 50%; transform: translate(-50%, -50%); width: 85px; height: 85px;">
-            <span class="label-text">sol</span>
-            <svg width="28" height="28" viewBox="0 0 397 311" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M64.6 237.9c2.4-2.4 5.7-3.8 9.2-3.8h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1l62.7-62.7zM64.6 3.8C67.1 1.4 70.4 0 73.8 0h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1L64.6 3.8zM332.4 117.1c-2.4-2.4-5.7-3.8-9.2-3.8H5.8c-5.8 0-8.7 7-4.6 11.1l62.7 62.7c2.4 2.4 5.7 3.8 9.2 3.8h317.4c5.8 0 8.7-7 4.6-11.1l-62.7-62.7z" fill="url(#sol_grad)"/>
-                <defs><linearGradient id="sol_grad" x1="391.2" y1="21.1" x2="5.5" y2="291.5" gradientUnits="userSpaceOnUse"><stop stop-color="#00FFA3"/><stop offset="1" stop-color="#DC1FFF"/></linearGradient></defs>
-            </svg>
+        <div class="asset-card" style="top: 40%; left: 50%; transform: translate(-50%, -50%); width: 105px; height: 105px; z-index: 15; border-color: rgba(34, 211, 238, 0.2);">
+            <span class="text-[10px] font-bold text-cyan-400/50 mb-2 uppercase tracking-tighter">sol</span>
+            <svg width="36" height="36" viewBox="0 0 397 311" fill="none"><path d="M64.6 237.9c2.4-2.4 5.7-3.8 9.2-3.8h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1l62.7-62.7zM64.6 3.8C67.1 1.4 70.4 0 73.8 0h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1L64.6 3.8zM332.4 117.1c-2.4-2.4-5.7-3.8-9.2-3.8H5.8c-5.8 0-8.7 7-4.6 11.1l62.7 62.7c2.4 2.4 5.7 3.8 9.2 3.8h317.4c5.8 0 8.7-7 4.6-11.1l-62.7-62.7z" fill="url(#sol_grad)"/></svg>
         </div>
         
-        <div class="asset-card" style="top: 5%; left: 10%; animation-delay: 0.5s;">
-            <span class="label-text">eth</span>
-            <svg width="22" height="22" viewBox="0 0 256 417" xmlns="http://www.w3.org/2000/svg" class="opacity-70">
-                <path d="M127.961 0l-2.795 9.5v275.668l2.795 2.79 127.962-75.638z" fill="#343434"/><path d="M127.962 0L0 212.32l127.962 75.638V154.158z" fill="#8C8C8C"/><path d="M127.961 312.187l-1.575 1.92v98.199l1.575 4.59 128.038-180.32z" fill="#3C3C3B"/><path d="M127.962 416.896v-104.72L0 236.585z" fill="#8C8C8C"/>
-            </svg>
+        <div class="asset-card" style="top: 5%; left: 20%; animation-delay: 0.5s;">
+            <span class="text-[9px] font-bold text-white/20 mb-1">eth</span>
+            <svg width="24" height="24" viewBox="0 0 256 417" class="opacity-70"><path d="M127.961 0l-2.795 9.5v275.668l2.795 2.79 127.962-75.638z" fill="#343434"/><path d="M127.962 0L0 212.32l127.962 75.638V154.158z" fill="#8C8C8C"/><path d="M127.961 312.187l-1.575 1.92v98.199l1.575 4.59 128.038-180.32z" fill="#3C3C3B"/><path d="M127.962 416.896v-104.72L0 236.585z" fill="#8C8C8C"/></svg>
         </div>
 
-        <div class="asset-card" style="top: 20%; right: 10%; animation-delay: 1.2s;">
-            <span class="label-text">bnb</span>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="#F3BA2F" xmlns="http://www.w3.org/2000/svg" class="opacity-70">
-                <path d="M12 0l-3.464 2 3.464 2 3.464-2L12 0zM3.464 6L0 8l3.464 2 3.464-2-3.464-2zm17.072 0l-3.464 2 3.464 2 3.464-2-3.464-2zM12 8.544l-3.464 2 3.464 2 3.464-2-3.464-2zM0 16l3.464 2 3.464-2-3.464-2L0 16zm20.536 0l3.464 2-3.464 2-3.464-2 3.464-2zM12 17.456l-3.464 2L12 21.456l3.464-2-3.464-2zM12 24l3.464-2-3.464-2-3.464 2L12 24z"/>
-            </svg>
+        <div class="asset-card" style="top: 12%; right: 18%; animation-delay: 1.2s;">
+            <span class="text-[9px] font-bold text-white/20 mb-1">bnb</span>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="#F3BA2F" class="opacity-70"><path d="M12 0l-3.464 2 3.464 2 3.464-2L12 0zM3.464 6L0 8l3.464 2 3.464-2-3.464-2zm17.072 0l-3.464 2 3.464 2 3.464-2-3.464-2zM12 8.544l-3.464 2 3.464 2 3.464-2-3.464-2zM0 16l3.464 2 3.464-2-3.464-2L0 16zm20.536 0l3.464 2-3.464 2-3.464-2 3.464-2zM12 17.456l-3.464 2L12 21.456l3.464-2-3.464-2zM12 24l3.464-2-3.464-2-3.464 2L12 24z"/></svg>
         </div>
 
-        <div class="asset-card" style="bottom: 10%; right: 18%; animation-delay: 1.8s;">
-            <span class="label-text">btc</span>
-            <svg width="22" height="22" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" class="opacity-70">
-                <path d="M63.04 39.74c-4.27 17.13-21.72 27.56-38.85 23.3-17.13-4.26-27.56-21.71-23.3-38.85C5.16 7.06 22.61-3.37 39.74.89c17.13 4.27 27.56 21.72 23.3 38.85zm-11.45-12.2c.64-4.29-2.63-6.6-7.1-8.13l1.45-5.83-3.55-.88-1.41 5.67c-.93-.23-1.89-.45-2.84-.66l1.42-5.71-3.55-.89-1.45 5.82c-.77-.18-1.53-.35-2.26-.53l.01-.03-4.9-.12-.95 3.79s2.63.6 2.58.64c1.44.36 1.7.1.31 1.95l-3.14 12.59c.1.03.24.06.38.12-.11-.03-.24-.06-.33-.09l-4.39 17.65 3.55.89 1.45-5.83c.97.26 1.91.5 2.82.72l-1.43 5.76 3.55.88 1.45-5.83c6.07 1.15 10.63.69 12.55-4.81 1.54-4.42-.08-6.98-3.27-8.64 2.33-.54 4.08-2.07 4.55-5.23z" fill="#F7931A"/>
-            </svg>
+        <div class="asset-card" style="bottom: 8%; right: 25%; animation-delay: 1.8s;">
+            <span class="text-[9px] font-bold text-white/20 mb-1">btc</span>
+            <svg width="26" height="26" viewBox="0 0 64 64" class="opacity-70"><path d="M63.04 39.74c-4.27 17.13-21.72 27.56-38.85 23.3-17.13-4.26-27.56-21.71-23.3-38.85C5.16 7.06 22.61-3.37 39.74.89c17.13 4.27 27.56 21.72 23.3 38.85zm-11.45-12.2c.64-4.29-2.63-6.6-7.1-8.13l1.45-5.83-3.55-.88-1.41 5.67c-.93-.23-1.89-.45-2.84-.66l1.42-5.71-3.55-.89-1.45 5.82c-.77-.18-1.53-.35-2.26-.53l.01-.03-4.9-.12-.95 3.79s2.63.6 2.58.64c1.44.36 1.7.1.31 1.95l-3.14 12.59c.1.03.24.06.38.12-.11-.03-.24-.06-.33-.09l-4.39 17.65 3.55.89 1.45-5.83c.97.26 1.91.5 2.82.72l-1.43 5.76 3.55.88 1.45-5.83c6.07 1.15 10.63.69 12.55-4.81 1.54-4.42-.08-6.98-3.27-8.64 2.33-.54 4.08-2.07 4.55-5.23z" fill="#F7931A"/></svg>
         </div>
     </div>
 
     <div class="w-full max-w-sm space-y-4 z-20">
-        <button onclick="toggleAuth('signup')" class="w-full py-4 rounded-2xl btn-recover text-[10px] font-black uppercase tracking-[0.2em]">Recover Account</button>
-        <button onclick="toggleAuth('signup')" class="w-full py-4 rounded-2xl btn-create text-[10px] font-black uppercase tracking-[0.2em]">Create Account</button>
+        <button onclick="toggleAuth('signup')" class="w-full py-4 rounded-2xl btn-recover text-[11px] font-black uppercase tracking-[0.25em] active:scale-95 transition-transform">Recover Account</button>
+        <button onclick="toggleAuth('signup')" class="w-full py-4 rounded-2xl btn-create text-[11px] font-black uppercase tracking-[0.25em] active:scale-95 transition-transform">Create Account</button>
         <div class="text-center pt-4">
-            <button onclick="toggleAuth('login')" class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">Already Have An Account? <span class="text-white ml-1">Log In</span></button>
+            <button onclick="toggleAuth('login')" class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Already Have An Account? <span class="text-white ml-1">Log In</span></button>
         </div>
     </div>
 
@@ -102,6 +113,8 @@
             </form>
         </div>
     </div>
+
+    <svg style="width:0;height:0;position:absolute;"><defs><linearGradient id="sol_grad" x1="391.2" y1="21.1" x2="5.5" y2="291.5" gradientUnits="userSpaceOnUse"><stop stop-color="#00FFA3"/><stop offset="1" stop-color="#DC1FFF"/></linearGradient></defs></svg>
 
     <script>
         function toggleAuth(mode) {
