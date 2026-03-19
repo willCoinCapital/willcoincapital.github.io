@@ -5,29 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | willCoinCapital</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { background-color: #000; color: white; font-family: 'Plus Jakarta Sans', sans-serif; }
         .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .ticker-glow { text-shadow: 0 0 10px rgba(34, 211, 238, 0.5); }
     </style>
 </head>
-<body class="p-8">
-    <nav class="flex justify-between items-center mb-12">
-        <div class="font-black text-xl">WILLCOIN<span class="text-cyan-400">CAPITAL</span></div>
-        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-500 to-teal-500"></div>
+<body class="p-6 min-height-screen">
+    <nav class="flex justify-between items-center mb-10">
+        <div class="font-black text-xl tracking-tighter">WILLCOIN<span class="text-cyan-400">CAPITAL</span></div>
+        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-500 to-teal-500 shadow-[0_0_15px_rgba(34,211,238,0.4)]"></div>
     </nav>
 
-    <h1 class="text-3xl font-extrabold mb-2">Welcome Back, Investor</h1>
-    <p class="text-gray-500 text-sm mb-8">Your portfolio is currently synchronizing with the blockchain.</p>
+    <h1 class="text-3xl font-extrabold tracking-tight mb-2">Welcome Back, Investor</h1>
+    <p class="text-gray-500 text-xs mb-8">Your portfolio is currently synchronizing with the blockchain.</p>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="glass p-8 rounded-3xl">
+    <div class="grid grid-cols-1 gap-4 mb-6">
+        <div class="glass p-8 rounded-3xl relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-4 opacity-10">
+                <svg width="60" height="60" viewBox="0 0 24 24" fill="white"><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 100-16 8 8 0 000 16z"/></svg>
+            </div>
             <h3 class="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2">Total Balance</h3>
-            <div class="text-4xl font-bold">$0.00</div>
+            <div class="text-4xl font-bold tracking-tighter">$0.00</div>
         </div>
-        <div class="glass p-8 rounded-3xl">
-            <h3 class="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2">Active Trade</h3>
-            <div class="text-cyan-400 font-bold uppercase">Pending...</div>
+
+        <div class="glass p-6 rounded-3xl flex justify-between items-center">
+            <div>
+                <h3 class="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">Active Trade</h3>
+                <div class="text-cyan-400 font-bold text-sm tracking-widest uppercase animate-pulse">Pending...</div>
+            </div>
+            <div class="h-2 w-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee]"></div>
         </div>
     </div>
+
+    <div class="glass p-4 rounded-2xl flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <img src="https://assets.coingecko.com/coins/images/1/small/bitcoin.png" class="w-6 h-6">
+            <span class="text-[10px] font-black uppercase">BTC / USD</span>
+        </div>
+        <div id="btc-price" class="text-sm font-bold ticker-glow text-cyan-400">Loading...</div>
+    </div>
+
+    <script>
+        // Real-time BTC Price Tracker
+        async function updatePrice() {
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+                const data = await response.json();
+                const price = data.bitcoin.usd.toLocaleString();
+                document.getElementById('btc-price').innerText = `$${price}`;
+            } catch (error) {
+                document.getElementById('btc-price').innerText = "Live";
+            }
+        }
+        updatePrice();
+        setInterval(updatePrice, 30000); // Updates every 30 seconds
+    </script>
 </body>
 </html>
