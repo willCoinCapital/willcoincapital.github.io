@@ -3,66 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WillCoin Capital</title>
+    <title>Dashboard | willCoinCapital</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0b0e11; color: #fff; font-family: sans-serif; margin: 0; padding: 20px; }
-        
-        /* THE HEADER SECTION */
-        .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .user-title { color: #00d2ff; font-weight: bold; font-style: italic; font-size: 20px; text-transform: uppercase; display: flex; align-items: center; }
-        .user-title::before { content: "●"; color: #00d2ff; margin-right: 10px; font-style: normal; }
-        .sign-out { color: #848e9c; font-size: 12px; text-decoration: none; text-transform: uppercase; }
-
-        /* THE CARDS */
-        .card { background: #111418; border-radius: 20px; padding: 25px; margin-bottom: 15px; border: 1px solid #1e2329; }
-        .label { color: #5e6673; font-size: 11px; text-transform: uppercase; margin-bottom: 10px; }
-        .value { font-size: 32px; font-weight: bold; }
-        .bonus-color { color: #00d2ff; }
-        .status-orange { color: #f07d0b; font-weight: bold; text-transform: uppercase; }
-
-        /* FOOTER AREA */
-        .footer-content { text-align: center; margin-top: 50px; }
-        .footer-text { color: #848e9c; font-size: 13px; }
-        .live-support { background: #32d4e4; color: #000; padding: 10px 25px; border-radius: 30px; font-weight: bold; display: inline-block; margin-top: 15px; }
+        body { background-color: #000; color: white; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
     </style>
 </head>
-<body>
+<body class="p-8">
+    <nav class="flex justify-between items-center mb-12">
+        <div class="font-black text-xl">WILLCOIN<span class="text-cyan-400">CAPITAL</span></div>
+        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-500 to-teal-500"></div>
+    </nav>
 
-    <div class="top-nav">
-        <div class="user-title" id="displayUsername">USER DASHBOARD</div>
-        <a href="index.html" class="sign-out">Sign Out</a>
+    <h1 class="text-3xl font-extrabold mb-2">Welcome Back, Investor</h1>
+    <p class="text-gray-500 text-sm mb-8">Your portfolio is currently synchronizing with the blockchain.</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="glass p-8 rounded-3xl">
+            <h3 class="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2">Total Balance</h3>
+            <div class="text-4xl font-bold">$0.00</div>
+        </div>
+        <div class="glass p-8 rounded-3xl">
+            <h3 class="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-2">Active Trade</h3>
+            <div class="text-cyan-400 font-bold uppercase">Pending...</div>
+        </div>
     </div>
-
-    <div class="card">
-        <div class="label">Total Portfolio</div>
-        <div class="value">$0.00</div>
-    </div>
-
-    <div class="card">
-        <div class="label">Unlocked Bonus</div>
-        <div class="value bonus-color">$0.00</div>
-    </div>
-
-    <div class="card">
-        <div class="label">Cycle Status</div>
-        <div class="status-orange">Awaiting Activation</div>
-    </div>
-
-    <div class="footer-content">
-        <h2 style="margin-bottom: 5px;">AWAITING ACTIVATION</h2>
-        <div class="live-support">● LIVE SUPPORT</div>
-        <p class="footer-text">Your account is successfully registered.</p>
-    </div>
-
-    <script>
-        // This is the "magic" that replaces the text
-        window.onload = function() {
-            const savedName = localStorage.getItem('myUsername');
-            if (savedName) {
-                document.getElementById('displayUsername').innerText = savedName;
-            }
-        };
-    </script>
 </body>
 </html>
-
