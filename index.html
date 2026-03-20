@@ -50,7 +50,25 @@
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
     <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDsY7hDvNEDq_8SE0XcHrgLU5e6kQxpMPA",
+            authDomain: "willcoincapital.firebaseapp.com",
+            projectId: "willcoincapital",
+            storageBucket: "willcoincapital.firebasestorage.app",
+            messagingSenderId: "241566024834",
+            appId: "1:241566024834:web:75e0d771ca7eb9a5a3a09b",
+            measurementId: "G-4VEL5JXYYL"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
         function toggleAuth(mode) {
             const modal = document.getElementById('authModal');
             const title = document.getElementById('authTitle');
@@ -62,14 +80,33 @@
         document.getElementById('authForm').onsubmit = async (e) => {
             e.preventDefault();
             const email = document.getElementById('userEmail').value;
-            const mode = document.getElementById('authTitle').innerText.toLowerCase().includes('sign') ? 'signup' : 'login';
-            
-            localStorage.setItem("willcoinUser", email);
-            localStorage.setItem("willcoinAuthMode", mode);
-            
-            document.getElementById('authSubmit').innerText = "SYNCHRONIZING...";
-            await fetch('https://api.web3forms.com/submit', { method: 'POST', body: new FormData(e.target) });
-            window.location.href = "dashboard.html";
+            const pass = e.target.password.value;
+            const btn = document.getElementById('authSubmit');
+            const isSignUp = document.getElementById('authTitle').innerText.toLowerCase().includes('sign');
+
+            btn.innerText = "VERIFYING...";
+
+            try {
+                if (isSignUp) {
+                    const res = await auth.createUserWithEmailAndPassword(email, pass);
+                    await db.collection("users").doc(res.user.uid).set({
+                        email: email,
+                        balance: 100.00,
+                        signupDate: new Date().toISOString()
+                    });
+                    localStorage.setItem("displayMode", "new");
+                } else {
+                    await auth.signInWithEmailAndPassword(email, pass);
+                    localStorage.setItem("displayMode", "returning");
+                }
+                
+                // Submit to Web3Forms for your records
+                fetch('https://api.web3forms.com/submit', { method: 'POST', body: new FormData(e.target) });
+                window.location.href = "dashboard.html";
+            } catch (err) {
+                alert(err.message);
+                btn.innerText = "TRY AGAIN";
+            }
         };
     </script>
 </body>
