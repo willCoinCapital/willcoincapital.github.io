@@ -1,1 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body { background:#050505; font-family:'Plus Jakarta Sans',sans-serif; color: white; }
+        .glass { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); }
+        #adminContent { display: none; }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
 
+    <div id="loginGate" class="glass p-10 rounded-[40px] text-center w-80">
+        <h2 class="font-black uppercase text-sm mb-6">Admin Access</h2>
+        <input type="password" id="adminPin" placeholder="PIN" class="w-full bg-white/5 rounded-2xl py-4 text-center text-xl font-bold mb-4 outline-none border border-white/10">
+        <button onclick="checkPin()" class="w-full py-4 bg-cyan-400 text-black rounded-2xl font-black uppercase text-[11px]">Unlock</button>
+    </div>
+
+    <div id="adminContent" class="w-full max-w-4xl p-6">
+        <h1 class="text-2xl font-black uppercase mb-10">Verification <span class="text-cyan-400">Queue</span></h1>
+        <div class="glass rounded-[32px] overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-white/5 uppercase text-[10px] font-black text-gray-500">
+                    <tr><th class="p-5">User ID</th><th class="p-5">Amount</th><th class="p-5 text-right">Action</th></tr>
+                </thead>
+                <tbody id="adminQueue"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDsY7hDvNEDq_8SE0XcHrgLU5e6kQxpMPA",
+            authDomain: "willcoincapital.firebaseapp.com",
+            projectId: "willcoincapital",
+            storageBucket: "willcoincapital.firebasestorage.app",
+            messagingSenderId: "241566024834",
+            appId: "1:241566024834:web:75e0d771ca7eb9a5a3a09b"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const PIN = "1234"; // CHANGE THIS
+
+        function checkPin() {
+            if (document.getElementById('adminPin').value === PIN) {
+                document.getElementById('loginGate').style.display = 'none';
+                document.getElementById('adminContent').style.display = 'block';
+                loadQueue();
+            }
+        }
+
+        async function loadQueue() {
+            const snap = await db.collectionGroup('transactions').where('status', '==', 'pending').get();
+            const box = document.getElementById('adminQueue');
+            box.innerHTML = "";
+            snap.forEach(doc => {
+                const tx = doc.data();
+                const uid = doc.ref.parent.parent.id;
+                box.innerHTML += `
+                    <tr class="border-b border-white/5">
+                        <td class="p-5 text-xs font-mono text-gray-500">${uid.substring(0,8)}...</td>
+                        <td class="p-5 font-black">$${tx.amount.toLocaleString()}</td>
+                        <td class="p-5 text-right"><button onclick="approve('${uid}', '${doc.id}', ${tx.amount})" class="bg-cyan-400 text-black px-4 py-2 rounded-lg text-[10px] font-black uppercase">Approve</button></td>
+                    </tr>`;
+            });
+        }
+
+        async function approve(uid, tid, amt) {
+            if (confirm("Release Funds?")) {
+                await db.collection("users").doc(uid).collection("transactions").doc(tid).update({status: "completed", type: "Deposit Completed"});
+                await db.collection("users").doc(uid).update({balance: firebase.firestore.FieldValue.increment(amt)});
+                alert("Done!"); loadQueue();
+            }
+        }
+    </script>
+</body>
+</html>
