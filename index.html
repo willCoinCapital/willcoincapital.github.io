@@ -52,13 +52,13 @@
             to { opacity: 1; transform: translateY(0); } 
         }
 
-        /* Layout Positioning */
+        /* Adjusted Layout Positioning */
         .header-section {
-            margin-top: 40px; /* Pushes header higher */
+            margin-top: 35px; /* Pushed the header higher up */
             text-align: center;
         }
         .auth-container {
-            margin-top: 60px; /* Lowers the account details section moderately */
+            margin-top: 55px; /* Lowered account details moderately */
             padding: 0 24px;
         }
     </style>
@@ -101,7 +101,10 @@
             toast.className = `toast`;
             toast.innerHTML = `<p class="text-[11px] font-black uppercase tracking-widest text-white">${message}</p>`;
             container.appendChild(toast);
-            setTimeout(() => { toast.remove(); }, 4000);
+            setTimeout(() => { 
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 500);
+            }, 3500);
         }
 
         function toggleMode() { 
