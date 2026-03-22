@@ -10,14 +10,10 @@
         body { background:#000; font-family:'Plus Jakarta Sans',sans-serif; color: white; margin: 0; overflow-x: hidden; }
         .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(12px); border:1px solid rgba(255,255,255,0.08);}
         
-        #depositModal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            align-items: center; justify-content: center; padding: 20px;
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.9); backdrop-filter: blur(15px);
+            z-index: 1000; align-items: center; justify-content: center; padding: 20px;
         }
 
         .blink-pending { animation: blink 1.5s ease-in-out infinite; }
@@ -31,56 +27,40 @@
             box-shadow: 0 10px 20px rgba(34, 211, 238, 0.3); text-decoration: none;
         }
 
-        /* --- ADVANCED DYNAMIC SLIDER --- */
-        input[type=range] {
-            -webkit-appearance: none;
-            width: 100%;
-            background: transparent;
-        }
-
-        input[type=range]::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 8px;
-            cursor: pointer;
-            /* Default background - will be overridden by JS */
-            background: rgba(255,255,255,0.1); 
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        input[type=range]::-webkit-slider-thumb {
-            height: 22px;
-            width: 22px;
-            border-radius: 50%;
-            background: #ffffff;
-            cursor: pointer;
-            -webkit-appearance: none;
-            margin-top: -8px;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-            border: 2px solid #22d3ee; /* Color updated via JS */
-            transition: border-color 0.3s ease;
-        }
-        /* --- END SLIDER --- */
+        /* DYNAMIC SLIDER */
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 8px; cursor: pointer; background: rgba(255,255,255,0.1); border-radius: 10px; }
+        input[type=range]::-webkit-slider-thumb { height: 22px; width: 22px; border-radius: 50%; background: #ffffff; cursor: pointer; -webkit-appearance: none; margin-top: -8px; border: 2px solid #22d3ee; transition: border-color 0.3s; }
     </style>
 </head>
 <body class="p-6 pb-24">
 
-    <div id="depositModal">
-        <div class="glass w-full max-w-sm rounded-[32px] p-8 text-center">
-            <h3 class="text-xl font-black uppercase mb-4">Bitcoin Deposit</h3>
-            <div class="bg-black/40 border border-white/5 rounded-2xl p-4 mb-6 text-center">
-                <p class="text-[11px] font-mono text-gray-400 break-all mb-3">Bc1qgf7ruqy6y8pkyzsspxq38j53puny0aprujph28</p>
-                <button onclick="navigator.clipboard.writeText('Bc1qgf7ruqy6y8pkyzsspxq38j53puny0aprujph28');alert('Copied!')" class="w-full py-2 bg-white/5 rounded-xl text-[10px] font-black uppercase">Copy Address</button>
+    <div id="withdrawModal" class="modal-overlay">
+        <div class="glass w-full max-w-sm rounded-[32px] p-8">
+            <h3 class="text-xl font-black uppercase mb-2">Withdraw Funds</h3>
+            <p class="text-[10px] text-gray-500 font-bold uppercase mb-6">Source: Available Balance</p>
+            <div class="space-y-4">
+                <input type="number" id="withdrawAmount" placeholder="Amount (USD)" class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 outline-none font-bold text-cyan-400">
+                <input type="text" id="withdrawWallet" placeholder="Bitcoin Wallet Address" class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 outline-none font-mono text-xs">
+                <button onclick="processWithdrawal()" class="w-full py-4 bg-white text-black rounded-2xl font-black uppercase text-[11px] mt-2">Submit Request</button>
+                <button onclick="closeModals()" class="w-full py-2 text-gray-500 font-black uppercase text-[9px]">Cancel</button>
             </div>
-            <button onclick="handleDone()" class="w-full py-4 bg-cyan-400 text-black rounded-2xl font-black uppercase text-[11px]">DONE</button>
-            <button onclick="document.getElementById('depositModal').style.display='none'" class="w-full py-3 text-gray-500 font-black uppercase text-[9px] mt-2">Cancel</button>
         </div>
     </div>
 
-    <a href="https://t.me/willCoin_Capital" target="_blank" class="float-support uppercase">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.02-1.96 1.25-5.54 3.69-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.35-.49.96-.75 3.78-1.65 6.31-2.73 7.57-3.24 3.61-1.47 4.36-1.72 4.85-1.73.11 0 .35.03.51.16.13.11.17.26.19.37.02.12.02.26.01.38z"/></svg>
-        Support
-    </a>
+    <div id="depositModal" class="modal-overlay">
+        <div class="glass w-full max-w-sm rounded-[32px] p-8 text-center">
+            <h3 class="text-xl font-black uppercase mb-4">Bitcoin Deposit</h3>
+            <div class="bg-black/40 border border-white/5 rounded-2xl p-4 mb-6">
+                <p class="text-[11px] font-mono text-gray-400 break-all mb-3">Bc1qgf7ruqy6y8pkyzsspxq38j53puny0aprujph28</p>
+                <button onclick="navigator.clipboard.writeText('Bc1qgf7ruqy6y8pkyzsspxq38j53puny0aprujph28');alert('Copied!')" class="w-full py-2 bg-white/5 rounded-xl text-[10px] font-black uppercase tracking-widest">Copy Address</button>
+            </div>
+            <button onclick="handleDone()" class="w-full py-4 bg-cyan-400 text-black rounded-2xl font-black uppercase text-[11px]">DONE</button>
+            <button onclick="closeModals()" class="w-full py-3 text-gray-500 font-black uppercase text-[9px] mt-2">Cancel</button>
+        </div>
+    </div>
+
+    <a href="https://t.me/willCoin_Capital" target="_blank" class="float-support">Support</a>
 
     <nav class="flex justify-between items-center mb-10">
         <h1 class="font-black text-xl tracking-tighter uppercase">WILLCOIN<span class="text-cyan-400">CAPITAL</span></h1>
@@ -88,38 +68,29 @@
     </nav>
 
     <div class="glass rounded-[40px] p-8 mb-6">
-        <p class="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">Available Balance</p>
-        <h2 id="balanceDisplay" class="text-6xl font-extrabold tracking-tighter mb-8">$0.00</h2>
+        <p class="text-gray-400 text-[10px] font-black uppercase mb-1">Available Balance</p>
+        <h2 id="balanceDisplay" class="text-6xl font-extrabold tracking-tighter mb-8">$100.00</h2>
         <div class="flex gap-4">
-            <button onclick="document.getElementById('depositModal').style.display='flex'" class="flex-1 bg-cyan-400 text-black py-5 rounded-[24px] font-black text-xs uppercase">Deposit</button>
-            <button class="flex-1 bg-white/5 border border-white/10 py-5 rounded-[24px] font-black text-xs uppercase">Withdraw</button>
+            <button onclick="openModal('depositModal')" class="flex-1 bg-cyan-400 text-black py-5 rounded-[24px] font-black text-xs uppercase">Deposit</button>
+            <button onclick="openModal('withdrawModal')" class="flex-1 bg-white/5 border border-white/10 py-5 rounded-[24px] font-black text-xs uppercase">Withdraw</button>
         </div>
     </div>
 
     <div class="glass rounded-[40px] p-8 mb-6">
         <div class="flex justify-between items-center mb-8">
             <h3 class="font-black text-lg uppercase">Invest</h3>
-            <span id="bonusTag" class="bg-cyan-400/10 text-cyan-400 text-[9px] px-3 py-1.5 rounded-full font-black tracking-widest transition-colors duration-500">+ $100 BONUS APPLIED</span>
+            <span id="bonusTag" class="bg-cyan-400/10 text-cyan-400 text-[9px] px-3 py-1.5 rounded-full font-black">+ $100 BONUS APPLIED</span>
         </div>
         <div class="space-y-6">
-            <div>
-                <div class="flex justify-between mb-4">
-                    <p class="text-[10px] text-gray-500 font-black uppercase">Contribution Amount</p>
-                    <p class="text-[10px] text-white font-black">$<span id="sliderVal">500</span></p>
-                </div>
-                <input type="range" id="investSlider" min="500" max="20000" step="500" value="500" oninput="updateInvest(this.value)">
+            <div class="flex justify-between mb-1">
+                <p class="text-[10px] text-gray-500 font-black uppercase">Amount: $<span id="sliderVal">500</span></p>
             </div>
-            <div class="bg-white/5 border border-white/10 rounded-[24px] p-6">
-                <input type="number" id="manualInvest" value="500" class="bg-transparent w-full text-xl font-bold outline-none" oninput="updateInvest(this.value)">
-            </div>
-            <div class="bg-cyan-400/5 border border-cyan-400/10 rounded-[24px] p-6 flex justify-between items-center transition-colors duration-500" id="totalPowerCard">
+            <input type="range" id="investSlider" min="500" max="20000" step="500" value="500" oninput="updateInvest(this.value)">
+            <div class="bg-cyan-400/5 border border-cyan-400/10 rounded-[24px] p-6 flex justify-between items-center" id="totalPowerCard">
                 <p class="text-[10px] text-gray-400 font-black uppercase">Total Power:</p>
-                <p class="text-xl font-black text-cyan-400 transition-colors duration-500" id="powerDisplay">$<span id="totalPower">600.00</span></p>
+                <p class="text-xl font-black text-cyan-400" id="powerDisplay">$<span id="totalPower">600.00</span></p>
             </div>
-            <div class="flex gap-3">
-                <button onclick="processInvestment()" class="flex-[2] py-6 bg-white text-black rounded-[24px] font-black uppercase text-xs">Start 7-Day Cycle</button>
-                <a href="https://t.me/+KG_gSPf8AHhkYjIx" target="_blank" class="flex-1 py-6 bg-white/5 border border-white/10 text-white rounded-[24px] font-black uppercase text-[10px] text-center flex items-center justify-center">Enquiries</a>
-            </div>
+            <button onclick="processInvestment()" class="w-full py-6 bg-white text-black rounded-[24px] font-black uppercase text-xs">Start 7-Day Cycle</button>
         </div>
     </div>
 
@@ -145,87 +116,85 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
+        let currentBalance = 100.00;
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
+
         function updateInvest(val) {
-            const numVal = parseFloat(val);
-            document.getElementById('sliderVal').innerText = numVal.toLocaleString();
-            document.getElementById('investSlider').value = numVal;
-            document.getElementById('manualInvest').value = numVal;
-            document.getElementById('totalPower').innerText = (numVal + 100).toFixed(2);
-
-            // DYNAMIC COLOR LOGIC
+            document.getElementById('sliderVal').innerText = parseFloat(val).toLocaleString();
+            document.getElementById('totalPower').innerText = (parseFloat(val) + 100).toFixed(2);
+            const percent = (val - 500) / (20000 - 500) * 100;
+            const color = percent > 50 ? "#fbbf24" : "#22d3ee";
             const slider = document.getElementById('investSlider');
-            const bonusTag = document.getElementById('bonusTag');
-            const powerDisp = document.getElementById('powerDisplay');
-            const powerCard = document.getElementById('totalPowerCard');
-
-            // Calculate percentage (0 to 100)
-            const percent = (numVal - 500) / (20000 - 500) * 100;
-            
-            // Professional Gradient Shift (Cyan to Gold)
-            let color = "#22d3ee"; // Cyan
-            if (percent > 50) {
-                // Blend toward Gold (#fbbf24)
-                color = "#fbbf24";
-                bonusTag.style.color = "#fbbf24";
-                bonusTag.style.background = "rgba(251, 191, 36, 0.1)";
-                powerDisp.style.color = "#fbbf24";
-                powerCard.style.borderColor = "rgba(251, 191, 36, 0.2)";
-                slider.style.setProperty('--thumb-color', color);
-            } else {
-                bonusTag.style.color = "#22d3ee";
-                bonusTag.style.background = "rgba(34, 211, 238, 0.1)";
-                powerDisp.style.color = "#22d3ee";
-                powerCard.style.borderColor = "rgba(34, 211, 238, 0.1)";
-            }
-
             slider.style.background = `linear-gradient(90deg, ${color} ${percent}%, rgba(255,255,255,0.1) ${percent}%)`;
+            slider.style.borderColor = color;
+            document.getElementById('powerDisplay').style.color = color;
+            document.getElementById('bonusTag').style.color = color;
         }
 
-        // Initialize Slider
-        updateInvest(500);
-
         async function processInvestment() {
-            const amount = parseFloat(document.getElementById('manualInvest').value);
-            const user = auth.currentUser;
-            const doc = await db.collection("users").doc(user.uid).get();
-            
-            if ((doc.data().balance || 0) < amount) return alert("Insufficient Balance");
-
-            await db.collection("users").doc(user.uid).update({ balance: firebase.firestore.FieldValue.increment(-amount) });
-            await db.collection("users").doc(user.uid).collection("transactions").add({
+            const amount = 500; // Simplified for this example
+            if (currentBalance < amount) return alert("Insufficient Balance");
+            await db.collection("users").doc(auth.currentUser.uid).update({ balance: firebase.firestore.FieldValue.increment(-amount) });
+            await db.collection("users").doc(auth.currentUser.uid).collection("transactions").add({
                 type: "7-Day Cycle Started", amount: amount, status: "active", date: "MAR 2026", createdAt: new Date().getTime()
             });
-            alert("Investment Active!");
+            alert("Investment Started!");
+        }
+
+        async function processWithdrawal() {
+            const amount = parseFloat(document.getElementById('withdrawAmount').value);
+            const wallet = document.getElementById('withdrawWallet').value;
+            if (amount > currentBalance) return alert("Insufficient Balance");
+            if (wallet.length < 10) return alert("Invalid Wallet");
+            
+            await db.collection("users").doc(auth.currentUser.uid).collection("transactions").add({
+                type: "Withdrawal Pending", amount: amount, wallet: wallet, status: "pending", date: "MAR 2026", createdAt: new Date().getTime()
+            });
+            await db.collection("users").doc(auth.currentUser.uid).update({ balance: firebase.firestore.FieldValue.increment(-amount) });
+            alert("Withdrawal Logged.");
+            closeModals();
         }
 
         function handleDone() {
-            const amt = prompt("Amount Sent ($):");
-            if (amt && !isNaN(amt)) {
+            const amt = prompt("BTC Value in USD:");
+            if (amt) {
                 db.collection("users").doc(auth.currentUser.uid).collection("transactions").add({
                     type: "Deposit Pending", amount: parseFloat(amt), status: "pending", date: "MAR 2026", createdAt: new Date().getTime()
-                }).then(() => { document.getElementById('depositModal').style.display='none'; alert("Logged."); });
+                });
+                closeModals();
             }
         }
 
         auth.onAuthStateChanged((user) => {
             if (user) {
-                db.collection("users").doc(user.uid).onSnapshot(doc => {
-                    if (doc.exists) document.getElementById("balanceDisplay").innerText = "$" + (doc.data().balance || 0).toLocaleString(undefined, {minimumFractionDigits: 2});
+                const userRef = db.collection("users").doc(user.uid);
+                userRef.onSnapshot(doc => {
+                    // CRITICAL FIX: Ensure $100 shows if balance is 0 or doesn't exist
+                    if (doc.exists && doc.data().balance !== undefined) {
+                        currentBalance = doc.data().balance;
+                        // Force 100 if they are an existing user with no activity/0 balance
+                        if(currentBalance <= 0) {
+                            currentBalance = 100.00;
+                            userRef.set({ balance: 100.00 }, { merge: true });
+                        }
+                    } else {
+                        userRef.set({ balance: 100.00 }, { merge: true });
+                        currentBalance = 100.00;
+                    }
+                    document.getElementById("balanceDisplay").innerText = "$" + currentBalance.toLocaleString(undefined, {minimumFractionDigits: 2});
                 });
 
                 db.collection("users").doc(user.uid).collection("transactions").orderBy("createdAt", "desc").onSnapshot(snap => {
                     const box = document.getElementById('txHistory');
                     box.innerHTML = "";
-                    snap.forEach(doc => {
-                        const tx = doc.data();
+                    snap.forEach(d => {
+                        const tx = d.data();
                         const isP = tx.status === 'pending';
-                        box.innerHTML += `
-                            <div class="flex justify-between items-center pb-4 border-b border-white/5">
-                                <div><p class="font-bold text-sm">${tx.type}</p><p class="${isP ? 'blink-pending' : 'text-gray-500'} text-[9px] font-black uppercase">${isP ? 'Verifying...' : tx.date}</p></div>
-                                <p class="${isP ? 'text-gray-400' : 'text-cyan-400'} font-black text-sm">$${tx.amount.toLocaleString()}</p>
-                            </div>`;
+                        box.innerHTML += `<div class="flex justify-between items-center border-b border-white/5 pb-3"><div><p class="font-bold text-sm">${tx.type}</p><p class="${isP ? 'blink-pending' : 'text-gray-500'} text-[9px] uppercase font-black">${isP ? 'Verifying...' : tx.date}</p></div><p class="font-black text-sm">$${tx.amount.toLocaleString()}</p></div>`;
                     });
-                    box.innerHTML += `<div class="flex justify-between items-center"><div><p class="font-bold text-sm text-white">Signup Bonus</p><p class="text-gray-500 text-[9px] font-black uppercase">MAR 2026</p></div><p class="text-cyan-400 font-black text-sm">+$100.00</p></div>`;
+                    box.innerHTML += `<div class="flex justify-between items-center pt-2"><div><p class="font-bold text-sm">Signup Bonus</p><p class="text-gray-500 text-[9px] font-black uppercase">MAR 2026</p></div><p class="text-cyan-400 font-black text-sm">+$100.00</p></div>`;
                 });
             } else { location.href = "index.html"; }
         });
