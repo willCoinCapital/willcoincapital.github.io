@@ -9,7 +9,6 @@
     <style>
         body { background:#000; font-family:'Plus Jakarta Sans',sans-serif; color: white; margin: 0; overflow-x: hidden; }
         .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(12px); border:1px solid rgba(255,255,255,0.08);}
-        .active-gradient { background: linear-gradient(135deg, rgba(34,211,238,0.1) 0%, rgba(0,0,0,0) 100%); border: 1px solid rgba(34,211,238,0.3); }
         
         #depositModal {
             display: none;
@@ -18,15 +17,55 @@
             background: rgba(0,0,0,0.85);
             backdrop-filter: blur(10px);
             z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            align-items: center; justify-content: center; padding: 20px;
         }
 
         .blink-pending { animation: blink 1.5s ease-in-out infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; color: #fbbf24; } 50% { opacity: 0.3; color: #f59e0b; } }
 
-        input[type=range]::-webkit-slider-runnable-track { background: rgba(255,255,255,0.1); border-radius: 10px; height: 6px; }
+        .float-support {
+            position: fixed; bottom: 25px; right: 25px; z-index: 999;
+            background: #22d3ee; color: black; padding: 12px 20px;
+            border-radius: 50px; font-weight: 900; font-size: 10px;
+            letter-spacing: 1px; display: flex; align-items: center; gap: 8px;
+            box-shadow: 0 10px 20px rgba(34, 211, 238, 0.3); text-decoration: none;
+        }
+
+        /* --- PROFESSIONAL SLIDER STYLING --- */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        /* The Track (The Bar) */
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8px;
+            cursor: pointer;
+            background: linear-gradient(90deg, #22d3ee 0%, rgba(34, 211, 238, 0.1) 100%);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* The Thumb (The Knob) */
+        input[type=range]::-webkit-slider-thumb {
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #ffffff;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -7px; /* Centers thumb on the track */
+            box-shadow: 0 0 15px rgba(34, 211, 238, 0.5);
+            border: 2px solid #22d3ee;
+        }
+
+        input[type=range]:focus::-webkit-slider-runnable-track {
+            background: linear-gradient(90deg, #22d3ee 0%, rgba(34, 211, 238, 0.2) 100%);
+        }
+        /* --- END SLIDER STYLING --- */
+
         input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
     </style>
 </head>
@@ -43,6 +82,11 @@
             <button onclick="document.getElementById('depositModal').style.display='none'" class="w-full py-3 text-gray-500 font-black uppercase text-[9px] mt-2">Cancel</button>
         </div>
     </div>
+
+    <a href="https://t.me/willCoin_Capital" target="_blank" class="float-support uppercase">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.02-1.96 1.25-5.54 3.69-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.24.35-.49.96-.75 3.78-1.65 6.31-2.73 7.57-3.24 3.61-1.47 4.36-1.72 4.85-1.73.11 0 .35.03.51.16.13.11.17.26.19.37.02.12.02.26.01.38z"/></svg>
+        Support
+    </a>
 
     <nav class="flex justify-between items-center mb-10">
         <h1 class="font-black text-xl tracking-tighter uppercase">WILLCOIN<span class="text-cyan-400">CAPITAL</span></h1>
@@ -63,33 +107,31 @@
             <h3 class="font-black text-lg uppercase">Invest</h3>
             <span class="bg-cyan-400/10 text-cyan-400 text-[9px] px-3 py-1.5 rounded-full font-black tracking-widest">+ $100 BONUS APPLIED</span>
         </div>
-        
         <div class="space-y-6">
             <div>
                 <div class="flex justify-between mb-4">
                     <p class="text-[10px] text-gray-500 font-black uppercase">Contribution Amount</p>
                     <p class="text-[10px] text-white font-black">$<span id="sliderVal">500</span></p>
                 </div>
-                <input type="range" id="investSlider" min="500" max="20000" step="500" value="500" class="w-full h-1.5 appearance-none cursor-pointer accent-cyan-400" oninput="updateInvest(this.value)">
+                <input type="range" id="investSlider" min="500" max="20000" step="500" value="500" oninput="updateInvest(this.value)">
             </div>
-
             <div class="bg-white/5 border border-white/10 rounded-[24px] p-6">
                 <input type="number" id="manualInvest" value="500" class="bg-transparent w-full text-xl font-bold outline-none" oninput="updateInvest(this.value)">
             </div>
-
             <div class="bg-cyan-400/5 border border-cyan-400/10 rounded-[24px] p-6 flex justify-between items-center">
                 <p class="text-[10px] text-gray-400 font-black uppercase">Total Power:</p>
                 <p class="text-xl font-black text-cyan-400">$<span id="totalPower">600.00</span></p>
             </div>
-
-            <button onclick="processInvestment()" class="w-full py-6 bg-white text-black rounded-[24px] font-black uppercase text-xs">Start 7-Day Cycle</button>
+            <div class="flex gap-3">
+                <button onclick="processInvestment()" class="flex-[2] py-6 bg-white text-black rounded-[24px] font-black uppercase text-xs">Start 7-Day Cycle</button>
+                <a href="https://t.me/+KG_gSPf8AHhkYjIx" target="_blank" class="flex-1 py-6 bg-white/5 border border-white/10 text-white rounded-[24px] font-black uppercase text-[10px] text-center flex items-center justify-center">Enquiries</a>
+            </div>
         </div>
     </div>
 
     <div class="glass rounded-[40px] p-8">
         <h3 class="font-black text-lg uppercase mb-6">History</h3>
-        <div id="txHistory" class="space-y-6">
-            </div>
+        <div id="txHistory" class="space-y-6"></div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -116,19 +158,31 @@
             document.getElementById('totalPower').innerText = (parseFloat(val) + 100).toFixed(2);
         }
 
+        async function processInvestment() {
+            const amount = parseFloat(document.getElementById('manualInvest').value);
+            const user = auth.currentUser;
+            const userRef = db.collection("users").doc(user.uid);
+            const doc = await userRef.get();
+            
+            if (doc.data().balance < amount) return alert("Insufficient Balance");
+
+            await userRef.update({ balance: firebase.firestore.FieldValue.increment(-amount) });
+            await userRef.collection("transactions").add({
+                type: "7-Day Cycle Started",
+                amount: amount,
+                status: "active",
+                date: "MAR 2026",
+                createdAt: new Date().getTime()
+            });
+            alert("Cycle Started Successfully!");
+        }
+
         function handleDone() {
-            const amt = prompt("Confirm Amount Sent ($):");
+            const amt = prompt("Amount Sent ($):");
             if (amt && !isNaN(amt)) {
                 db.collection("users").doc(auth.currentUser.uid).collection("transactions").add({
-                    type: "Deposit Pending",
-                    amount: parseFloat(amt),
-                    status: "pending",
-                    date: "MAR 2026",
-                    createdAt: new Date().getTime()
-                }).then(() => {
-                    document.getElementById('depositModal').style.display='none';
-                    alert("Logged successfully.");
-                });
+                    type: "Deposit Pending", amount: parseFloat(amt), status: "pending", date: "MAR 2026", createdAt: new Date().getTime()
+                }).then(() => { document.getElementById('depositModal').style.display='none'; alert("Logged."); });
             }
         }
 
@@ -141,18 +195,23 @@
                 db.collection("users").doc(user.uid).collection("transactions").orderBy("createdAt", "desc").onSnapshot(snap => {
                     const box = document.getElementById('txHistory');
                     box.innerHTML = "";
-                    if(snap.empty) {
-                        box.innerHTML = '<p class="text-gray-600 text-[10px] font-black uppercase">No Recent Activity</p>';
-                    }
+                    
+                    const bonusHTML = `
+                        <div class="flex justify-between items-center">
+                            <div><p class="font-bold text-sm text-white">Signup Bonus</p><p class="text-gray-500 text-[9px] font-black uppercase">MAR 2026</p></div>
+                            <p class="text-cyan-400 font-black text-sm">+$100.00</p>
+                        </div>`;
+
                     snap.forEach(doc => {
                         const tx = doc.data();
                         const isP = tx.status === 'pending';
                         box.innerHTML += `
-                            <div class="flex justify-between items-center">
+                            <div class="flex justify-between items-center pb-4 border-b border-white/5">
                                 <div><p class="font-bold text-sm">${tx.type}</p><p class="${isP ? 'blink-pending' : 'text-gray-500'} text-[9px] font-black uppercase">${isP ? 'Verifying...' : tx.date}</p></div>
-                                <p class="${isP ? 'text-gray-500' : 'text-cyan-400'} font-black text-sm">$${tx.amount.toLocaleString()}</p>
+                                <p class="${isP ? 'text-gray-400' : 'text-cyan-400'} font-black text-sm">$${tx.amount.toLocaleString()}</p>
                             </div>`;
                     });
+                    box.innerHTML += bonusHTML;
                 });
             } else { location.href = "index.html"; }
         });
