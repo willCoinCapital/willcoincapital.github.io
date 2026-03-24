@@ -9,33 +9,42 @@
     <style>
         body { background:#000; font-family:'Plus Jakarta Sans',sans-serif; color: white; margin: 0; overflow-x: hidden; }
         .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(12px); border:1px solid rgba(255,255,255,0.08);}
-        
-        /* New Sophisticated Cycle Card Styling */
-        .cycle-card { 
-            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
+        .cycle-card { background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
         .text-gold { color: #F59E0B; text-shadow: 0 0 10px rgba(245, 158, 11, 0.3); }
-        
         .floating-support { position: fixed; bottom: 30px; right: 25px; z-index: 500; background: #22d3ee; color: #000; width: 60px; height: 60px; border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 15px 30px rgba(34, 211, 238, 0.4); }
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); backdrop-filter: blur(15px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
         #notification-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 350px; }
         .toast { background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-left: 4px solid #22d3ee; padding: 16px 20px; border-radius: 18px; display: flex; align-items: center; animation: slideDown 0.4s forwards; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
-        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; }
         input[type=range]::-webkit-slider-thumb { height: 24px; width: 24px; border-radius: 50%; background: #ffffff; cursor: pointer; -webkit-appearance: none; margin-top: -8px; border: 2px solid #22d3ee; }
         .hidden { display: none !important; }
         .btn-locked { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.1); pointer-events: none; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="p-6 pb-32">
     <div id="notification-container"></div>
 
-    <a href="https://t.me/willCoin_Capital" target="_blank" class="floating-support">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
-    </a>
+    <div id="withdrawModal" class="modal-overlay">
+        <div class="glass w-full max-w-sm rounded-[32px] p-8">
+            <h3 class="text-xl font-black uppercase mb-6 tracking-widest text-center text-white">Withdrawal</h3>
+            <div class="space-y-4 mb-6">
+                <input type="text" id="drawWallet" placeholder="Wallet Address" class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 outline-none text-white font-bold">
+                <input type="number" id="drawAmount" placeholder="Amount USD" class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 outline-none text-white font-bold">
+            </div>
+            <button onclick="handleWithdrawal()" class="w-full py-4 bg-white text-black rounded-2xl font-black uppercase text-[11px] tracking-widest">REQUEST WITHDRAWAL</button>
+            <button onclick="closeModal('withdrawModal')" class="w-full py-3 text-gray-500 font-black uppercase text-[9px] mt-2 w-full text-center">Cancel</button>
+        </div>
+    </div>
+
+    <div id="historyDetailModal" class="modal-overlay">
+        <div class="glass w-full max-w-sm rounded-[32px] p-8">
+            <h3 class="text-xl font-black uppercase mb-6 tracking-widest text-center text-white">Transaction Detail</h3>
+            <div id="historyDetailContent" class="space-y-4 mb-8"></div>
+            <button onclick="closeModal('historyDetailModal')" class="w-full py-4 bg-white text-black rounded-2xl font-black uppercase text-[11px] tracking-widest">Close</button>
+        </div>
+    </div>
 
     <div id="depositModal" class="modal-overlay">
         <div class="glass w-full max-w-sm rounded-[32px] p-8 text-center">
@@ -44,10 +53,7 @@
                 <p id="btcAddr" class="text-[11px] font-mono text-gray-400 break-all mb-3">Bc1qgf7ruqy6y8pkyzsspxq38j53puny0aprujph28</p>
                 <button onclick="copyBTC()" class="w-full py-2 bg-white/5 rounded-xl text-[10px] font-black uppercase tracking-widest text-white">Copy Address</button>
             </div>
-            <div class="mb-6 text-left">
-                <p class="text-[9px] font-black text-gray-500 uppercase mb-2 ml-2 tracking-widest">Input Amount Sent (USD)</p>
-                <input type="number" id="depositInputAmt" placeholder="0.00" class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 outline-none text-white font-bold">
-            </div>
+            <input type="number" id="depositInputAmt" placeholder="0.00" class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 outline-none text-white font-bold mb-6">
             <button onclick="handleDepositSubmit()" class="w-full py-4 bg-cyan-400 text-black rounded-2xl font-black uppercase text-[11px] tracking-widest">I HAVE SENT FUNDS</button>
             <button onclick="closeModal('depositModal')" class="w-full py-3 text-gray-500 font-black uppercase text-[9px] mt-2">Close</button>
         </div>
@@ -77,18 +83,10 @@
                 <span id="cardCountdown" class="text-[11px] font-mono text-orange-400 font-bold">Calculating...</span>
             </div>
             <div class="flex justify-between items-end mb-6">
-                <div>
-                    <p id="activeCardAmt" class="text-4xl font-black text-white">$0.00</p>
-                    <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest mt-1">Staked Principle</p>
-                </div>
-                <div class="text-right">
-                    <p class="text-2xl font-black text-green-400">+50%</p>
-                    <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest mt-1">Target Yield</p>
-                </div>
+                <div><p id="activeCardAmt" class="text-4xl font-black text-white">$0.00</p><p class="text-[9px] text-gray-500 font-bold uppercase mt-1">Staked Principle</p></div>
+                <div class="text-right"><p class="text-2xl font-black text-green-400">+50%</p><p class="text-[9px] text-gray-500 font-bold uppercase mt-1">Target Yield</p></div>
             </div>
-            <div class="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-                <div id="cardProgressBar" class="h-full bg-gradient-to-r from-orange-500 to-yellow-400" style="width: 0%"></div>
-            </div>
+            <div class="w-full h-1.5 bg-white/5 rounded-full overflow-hidden"><div id="cardProgressBar" class="h-full bg-gradient-to-r from-orange-500 to-yellow-400" style="width: 0%"></div></div>
         </div>
 
         <div class="glass rounded-[40px] p-8 mb-6">
@@ -110,14 +108,11 @@
     </div>
 
     <div id="investmentDetailsView" class="hidden fade-in">
-        <div class="flex items-center gap-4 mb-8">
-            <button onclick="showDashboard()" class="p-4 glass rounded-2xl"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7" /></svg></button>
-            <h1 class="text-xl font-black uppercase tracking-tighter text-white">Yield <span class="text-cyan-400">Journey</span></h1>
-        </div>
+        <button onclick="showDashboard()" class="mb-8 p-4 glass rounded-2xl"><svg class="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7" /></svg></button>
         <div class="glass rounded-[40px] p-8 mb-6 border-b-4 border-orange-500">
             <h2 id="activeStakedAmt" class="text-4xl font-extrabold text-white mb-8">$0.00</h2>
             <div class="w-full h-3 bg-white/5 rounded-full mb-4 overflow-hidden"><div id="journeyProgressBar" class="h-full bg-orange-500 rounded-full" style="width: 0%;"></div></div>
-            <div class="flex justify-between text-[10px] font-black uppercase text-gray-500 tracking-widest"><span>Cycle Active</span><span id="journeyCountdown">Calculating...</span></div>
+            <div class="flex justify-between text-[10px] font-black text-gray-500 uppercase"><span>Cycle Active</span><span id="journeyCountdown">Calculating...</span></div>
         </div>
         <button id="withdrawYieldBtn" onclick="finalizeInvestment()" class="w-full py-6 bg-green-500 text-black rounded-[24px] font-black uppercase text-xs tracking-widest mb-6 hidden">Withdraw Total Payout</button>
         <div class="glass rounded-[40px] p-8"><div id="scheduleContainer" class="space-y-4"></div></div>
@@ -143,118 +138,146 @@
             setTimeout(() => toast.remove(), 3500);
         }
 
-        function updateInvest(val) {
-            const num = parseFloat(val) || 0;
-            const btn = document.getElementById('startBtn');
-            document.getElementById('investSlider').value = num;
-            document.getElementById('manualInvest').value = num;
-            if (num >= 500 && currentBalance >= num) {
-                btn.className = "w-full py-6 bg-white text-black rounded-[24px] font-black uppercase text-xs tracking-widest opacity-100";
-                btn.innerText = "Start 7-Day Cycle";
-                btn.style.pointerEvents = "auto";
-            } else {
-                btn.className = "w-full py-6 rounded-[24px] font-black uppercase text-xs tracking-widest btn-locked";
-                btn.innerText = num > currentBalance ? "Insufficient Balance" : "Min $500 Required";
-            }
+        // Restored History Detail Logic
+        function viewHistoryDetail(index) {
+            const item = userHistory[index];
+            if(!item) return;
+            const content = document.getElementById('historyDetailContent');
+            const isGold = item.type.includes("Cycle Active");
+            const isPending = (item.status && item.status.includes('Verifying'));
+            
+            content.innerHTML = `
+                <div class="bg-white/5 p-5 rounded-2xl">
+                    <p class="text-[10px] text-gray-500 font-bold uppercase mb-1">Type</p>
+                    <p class="text-white font-black">${item.type}</p>
+                </div>
+                <div class="bg-white/5 p-5 rounded-2xl">
+                    <p class="text-[10px] text-gray-500 font-bold uppercase mb-1">Amount</p>
+                    <p class="text-white font-black">$${item.amount.toLocaleString()}</p>
+                </div>
+                <div class="bg-white/5 p-5 rounded-2xl flex justify-between">
+                    <div><p class="text-[10px] text-gray-500 font-bold uppercase mb-1">Ref ID</p><p class="text-white font-mono text-xs">${item.id}</p></div>
+                    <div class="text-right"><p class="text-[10px] text-gray-500 font-bold uppercase mb-1">Date</p><p class="text-white font-black text-xs">${item.date}</p></div>
+                </div>
+                <div class="bg-white/5 p-5 rounded-2xl">
+                    <p class="text-[10px] text-gray-500 font-bold uppercase mb-1">Status</p>
+                    <p class="${isGold ? 'text-gold' : (isPending ? 'text-orange-400' : 'text-green-400')} font-black uppercase text-xs">${item.status}</p>
+                </div>`;
+            openModal('historyDetailModal');
+        }
+
+        async function handleWithdrawal() {
+            const wallet = document.getElementById('drawWallet').value;
+            const amt = parseFloat(document.getElementById('drawAmount').value);
+            if(!wallet || isNaN(amt) || amt > currentBalance) return notify("Check details/balance");
+            
+            const userRef = db.collection("users").doc(auth.currentUser.uid);
+            const drawId = "WC-WTH-" + Math.random().toString(36).substr(2, 4).toUpperCase();
+            
+            await userRef.update({
+                balance: firebase.firestore.FieldValue.increment(-amt),
+                history: firebase.firestore.FieldValue.arrayUnion({
+                    type: "Withdrawal Pending",
+                    amount: amt,
+                    id: drawId,
+                    date: "MAR 2026",
+                    status: "Verifying"
+                })
+            });
+            closeModal('withdrawModal');
+            notify("Withdrawal Requested");
         }
 
         async function processInvestment() {
             const amt = parseFloat(document.getElementById('manualInvest').value);
             const userRef = db.collection("users").doc(auth.currentUser.uid);
-            const startTime = Date.now();
             const cycleId = "WC-INV-" + Math.random().toString(36).substr(2, 4).toUpperCase();
 
             await userRef.update({ 
                 balance: firebase.firestore.FieldValue.increment(-amt),
-                activeCycle: { amount: amt, startTime: startTime },
+                activeCycle: { amount: amt, startTime: Date.now() },
                 history: firebase.firestore.FieldValue.arrayUnion({
                     type: "7-Day Cycle Active",
                     amount: amt,
                     id: cycleId,
                     date: "MAR 2026",
-                    status: "Successful" // AUTOMATIC SUCCESS
+                    status: "Successful"
                 })
             });
-            notify("INVESTMENT STARTED");
+            notify("Investment Successful");
             setTimeout(() => location.reload(), 1000);
         }
 
         auth.onAuthStateChanged(user => {
             if (!user) { location.href = "index.html"; return; }
-            const userRef = db.collection("users").doc(user.uid);
-            userRef.onSnapshot(doc => {
-                if (doc.exists) {
-                    const data = doc.data();
-                    currentBalance = data.balance || 0;
-                    document.getElementById("balanceDisplay").innerText = "$" + currentBalance.toLocaleString(undefined, {minimumFractionDigits: 2});
+            db.collection("users").doc(user.uid).onSnapshot(doc => {
+                const data = doc.data();
+                currentBalance = data.balance || 0;
+                document.getElementById("balanceDisplay").innerText = "$" + currentBalance.toLocaleString(undefined, {minimumFractionDigits: 2});
+                
+                userHistory = data.history || [];
+                const container = document.getElementById('historyContainer');
+                const reversed = [...userHistory].reverse();
+                
+                container.innerHTML = reversed.slice(0, 10).map((item, idx) => {
+                    const actualIdx = userHistory.length - 1 - idx;
+                    const isGold = item.type.includes("Cycle Active");
+                    const isPending = (item.status && item.status.includes('Verifying'));
+                    const colorClass = isGold ? "text-gold" : (isPending ? "text-orange-400" : "text-green-400");
                     
-                    userHistory = data.history || [];
-                    const reversedHistory = [...userHistory].reverse();
-                    const container = document.getElementById('historyContainer');
-                    
-                    container.innerHTML = reversedHistory.slice(0, 10).map(item => {
-                        const isGold = item.type.includes("Cycle Active");
-                        const isPending = (item.status && item.status.includes('Verifying'));
-                        
-                        let colorClass = "text-green-400"; // Default Success
-                        if (isGold) colorClass = "text-gold"; // Golden Success
-                        if (isPending) colorClass = "text-orange-400"; // Pending Orange
+                    return `
+                        <div onclick="viewHistoryDetail(${actualIdx})" class="flex justify-between items-start cursor-pointer active:opacity-50">
+                            <div>
+                                <p class="text-white font-bold text-[13px] mb-1">${item.type}</p>
+                                <p class="text-[9px] text-gray-500 font-black uppercase tracking-widest">${item.id} • ${item.status}</p>
+                            </div>
+                            <p class="${colorClass} font-black text-sm">$${item.amount.toLocaleString()}</p>
+                        </div>`;
+                }).join('') || '<p class="text-gray-500 text-[10px] font-black uppercase">No transactions yet</p>';
 
-                        return `
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <p class="text-white font-bold text-[13px] mb-1">${item.type}</p>
-                                    <p class="text-[9px] text-gray-500 font-black uppercase tracking-widest">${item.id} • ${item.status}</p>
-                                </div>
-                                <p class="${colorClass} font-black text-sm">$${item.amount.toLocaleString()}</p>
-                            </div>`;
-                    }).join('') || '<p class="text-gray-500 text-[10px] font-black uppercase">No transactions yet</p>';
-
-                    checkActiveInvestment(data);
-                    updateInvest(500);
-                }
+                checkActiveInvestment(data);
+                updateInvest(500);
             });
         });
 
         function checkActiveInvestment(data) {
             const cycleCard = document.getElementById('activeInvestmentCard');
             if (!data.activeCycle) { cycleCard.classList.add('hidden'); return; }
-            
             cycleCard.classList.remove('hidden');
-            const cycle = data.activeCycle;
             const now = Date.now();
-            const timeLeft = Math.max(0, (cycle.startTime + (7 * MS_PER_DAY)) - now);
-            const isFinished = timeLeft <= 0;
-
-            document.getElementById('activeCardAmt').innerText = `$${cycle.amount.toLocaleString()}`;
+            const timeLeft = Math.max(0, (data.activeCycle.startTime + (7 * MS_PER_DAY)) - now);
             const h = Math.floor(timeLeft / (1000 * 60 * 60));
             const m = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-            const timerStr = isFinished ? "Cycle Complete" : `${h}h ${m}m left`;
-            
-            document.getElementById('cardCountdown').innerText = timerStr;
-            document.getElementById('journeyCountdown').innerText = timerStr;
-            document.getElementById('activeStakedAmt').innerText = `$${cycle.amount.toLocaleString()}`;
-
-            const percent = Math.min(100, ((now - cycle.startTime) / (7 * MS_PER_DAY)) * 100);
+            document.getElementById('cardCountdown').innerText = timeLeft <= 0 ? "Complete" : `${h}h ${m}m left`;
+            document.getElementById('activeCardAmt').innerText = "$" + data.activeCycle.amount.toLocaleString();
+            const percent = Math.min(100, ((now - data.activeCycle.startTime) / (7 * MS_PER_DAY)) * 100);
             document.getElementById('cardProgressBar').style.width = percent + "%";
-            document.getElementById('journeyProgressBar').style.width = percent + "%";
+        }
 
-            if (isFinished) document.getElementById('withdrawYieldBtn').classList.remove('hidden');
-            
-            const container = document.getElementById('scheduleContainer');
-            container.innerHTML = "";
-            const daily = (cycle.amount * 0.5) / 7;
-            const currentDay = Math.min(Math.floor((now - cycle.startTime) / MS_PER_DAY) + 1, 7);
-            for (let i = 1; i <= 7; i++) {
-                const isCurrent = i === currentDay;
-                container.innerHTML += `<div class="flex justify-between items-center p-5 rounded-3xl ${isCurrent ? 'bg-orange-400/10 border-orange-400/20' : 'bg-white/5'}">
-                    <span class="text-[10px] font-black ${isCurrent ? 'text-orange-400' : 'text-gray-500'}">DAY 0${i}</span>
-                    <p class="text-xs font-black ${i <= currentDay ? 'text-green-400' : 'text-gray-600'}">+$${daily.toFixed(2)}</p>
-                </div>`;
+        function updateInvest(val) {
+            const num = parseFloat(val) || 0;
+            const btn = document.getElementById('startBtn');
+            document.getElementById('investSlider').value = num;
+            document.getElementById('manualInvest').value = num;
+            if (num >= 500 && currentBalance >= num) {
+                btn.className = "w-full py-6 bg-white text-black rounded-[24px] font-black uppercase text-xs tracking-widest";
+            } else {
+                btn.className = "w-full py-6 rounded-[24px] font-black uppercase text-xs tracking-widest btn-locked";
             }
         }
 
-        // Standard helpers
+        async function handleDepositSubmit() {
+            const amt = parseFloat(document.getElementById('depositInputAmt').value);
+            if(isNaN(amt) || amt <= 0) return notify("Enter valid amount");
+            const userRef = db.collection("users").doc(auth.currentUser.uid);
+            await userRef.update({
+                history: firebase.firestore.FieldValue.arrayUnion({
+                    type: "Deposit Pending", amount: amt, id: "WC-DEP-" + Math.random().toString(36).substr(2, 4).toUpperCase(), date: "MAR 2026", status: "Verifying"
+                })
+            });
+            closeModal('depositModal'); notify("Deposit recorded");
+        }
+
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         function showInvestmentPageFromCard() { document.getElementById('dashboardView').classList.add('hidden'); document.getElementById('investmentDetailsView').classList.remove('hidden'); }
