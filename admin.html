@@ -34,18 +34,19 @@
                 <p class="text-cyan-400 text-[10px] font-black uppercase tracking-widest mb-1">Root Access Active</p>
                 <h1 class="text-3xl font-black uppercase">willCoin <span class="text-white/20 text-xl ml-2">HQ</span></h1>
             </div>
-            <button onclick="location.reload()" class="text-[10px] font-black uppercase text-white/40 hover:text-white bg-white/5 px-4 py-2 rounded-full">Secure Logout</button>
+            <button onclick="handleLogout()" class="text-[10px] font-black uppercase text-white/40 hover:text-white bg-white/5 px-4 py-2 rounded-full">Secure Logout</button>
         </div>
 
         <section>
             <h2 class="text-sm font-black uppercase mb-4 px-2 flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-                Transaction Queue
+                Verification Queue
             </h2>
             <div class="glass rounded-[32px] overflow-hidden border border-white/5">
                 <table class="w-full text-left">
                     <thead class="bg-white/5 uppercase text-[9px] font-black text-gray-500">
                         <tr>
+                            <th class="p-5">User Account</th>
                             <th class="p-5">Details</th>
                             <th class="p-5 text-center">Amount</th>
                             <th class="p-5 text-right">Decision</th>
@@ -63,7 +64,7 @@
                     <thead class="bg-white/5 uppercase text-[9px] font-black text-gray-500">
                         <tr>
                             <th class="p-5">Account</th>
-                            <th class="p-5">Balance / Power</th>
+                            <th class="p-5">Balance</th>
                             <th class="p-5 text-right">Account Actions</th>
                         </tr>
                     </thead>
@@ -89,112 +90,139 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-
         const ADMIN_PIN = "555888"; 
+
+        // AUTO-LOGIN CHECK ON LOAD
+        window.onload = function() {
+            if (localStorage.getItem('admin_session') === 'active') {
+                showAdminPanel();
+            }
+        };
 
         function checkPin() {
             if (document.getElementById('adminPin').value === ADMIN_PIN) {
-                document.getElementById('loginGate').classList.add('hidden');
-                document.getElementById('adminContent').classList.remove('hidden');
-                loadQueue();
-                loadUsers();
-            } else { alert("ACCESS DENIED"); }
+                localStorage.setItem('admin_session', 'active');
+                showAdminPanel();
+            } else { 
+                alert("ACCESS DENIED"); 
+            }
         }
 
-        async function loadQueue() {
-            const snap = await db.collectionGroup('transactions').get();
-            const box = document.getElementById('adminQueue');
-            box.innerHTML = snap.empty ? '<tr><td colspan="3" class="p-10 text-center text-white/20 uppercase text-[10px]">No Transactions</td></tr>' : "";
-            
-            snap.forEach(doc => {
-                const tx = doc.data();
-                const uid = doc.ref.parent.parent.id;
-                const isPending = tx.status === 'pending';
+        function showAdminPanel() {
+            document.getElementById('loginGate').classList.add('hidden');
+            document.getElementById('adminContent').classList.remove('hidden');
+            syncData();
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('admin_session');
+            location.reload();
+        }
+
+        function syncData() {
+            db.collection('users').onSnapshot(snap => {
+                const queueBox = document.getElementById('adminQueue');
+                const userBox = document.getElementById('userList');
                 
-                box.innerHTML += `
-                    <tr class="border-b border-white/5 hover:bg-white/[0.01]">
-                        <td class="p-5">
-                            <div class="text-[10px] font-mono text-gray-500 mb-1">${doc.id}</div>
-                            <div class="inline-block px-2 py-0.5 rounded text-[8px] font-black uppercase ${tx.status === 'completed' ? 'bg-green-500/10 text-green-500' : tx.status === 'failed' ? 'bg-red-500/10 text-red-500' : 'bg-cyan-400/10 text-cyan-400'}">
-                                ${tx.status || 'Unknown'}
-                            </div>
-                        </td>
-                        <td class="p-5 font-black text-center text-xl">$${(tx.amount || 0).toLocaleString()}</td>
-                        <td class="p-5 text-right">
-                            ${isPending ? `
-                                <div class="flex gap-2 justify-end">
-                                    <button onclick="updateStatus('${uid}', '${doc.id}', ${tx.amount}, 'completed')" class="bg-cyan-400 text-black px-4 py-2 rounded-xl text-[9px] font-black uppercase transition">Success</button>
-                                    <button onclick="updateStatus('${uid}', '${doc.id}', ${tx.amount}, 'failed')" class="border border-red-500 text-red-500 px-4 py-2 rounded-xl text-[9px] font-black uppercase hover:bg-red-500 hover:text-white transition">Fail</button>
-                                </div>
-                            ` : `<span class="text-[9px] text-white/20 uppercase font-black">Settled</span>`}
-                        </td>
-                    </tr>`;
-            });
-        }
+                queueBox.innerHTML = "";
+                userBox.innerHTML = "";
+                let pendingCount = 0;
 
-        async function loadUsers() {
-            const snap = await db.collection('users').get();
-            const box = document.getElementById('userList');
-            box.innerHTML = "";
-            
-            snap.forEach(doc => {
-                const user = doc.data();
-                box.innerHTML += `
-                    <tr class="border-b border-white/5">
-                        <td class="p-5">
-                            <div class="text-sm font-bold text-white">${user.email || 'Anonymous'}</div>
-                            <div class="text-[9px] text-white/20 font-mono">${doc.id}</div>
-                        </td>
-                        <td class="p-5 font-black">
-                            <div class="text-cyan-400 text-lg">$${(user.balance || 0).toLocaleString()}</div>
-                            <div class="text-[9px] text-white/40 uppercase font-bold">Power: $${(user.totalPower || 0).toLocaleString()}</div>
-                        </td>
-                        <td class="p-5 text-right space-x-1">
-                            <button onclick="editField('${doc.id}', 'balance')" class="border border-white/10 text-white/40 px-3 py-1.5 rounded-lg text-[8px] font-black uppercase hover:border-cyan-400 hover:text-cyan-400">Bal</button>
-                            <button onclick="editField('${doc.id}', 'totalPower')" class="border border-white/10 text-white/40 px-3 py-1.5 rounded-lg text-[8px] font-black uppercase hover:border-cyan-400 hover:text-cyan-400">Power</button>
-                            <button onclick="resetAccount('${doc.id}')" class="border border-yellow-500/20 text-yellow-500/50 px-3 py-1.5 rounded-lg text-[8px] font-black uppercase hover:bg-yellow-500 hover:text-black">Reset</button>
-                            <button onclick="deleteAccount('${doc.id}')" class="btn-danger px-3 py-1.5 rounded-lg text-[8px] font-black uppercase">Delete</button>
-                        </td>
-                    </tr>`;
-            });
-        }
+                snap.forEach(doc => {
+                    const user = doc.data();
+                    const uid = doc.id;
+                    const history = user.history || [];
 
-        async function updateStatus(uid, tid, amt, newStatus) {
-            if (confirm(newStatus === 'completed' ? `Confirm $${amt} deposit?` : "Mark as failed?")) {
-                await db.collection("users").doc(uid).collection("transactions").doc(tid).update({
-                    status: newStatus,
-                    type: newStatus === 'completed' ? "Deposit Success" : "Deposit Failed"
+                    history.forEach((tx, index) => {
+                        if (tx.status === "Verifying") {
+                            pendingCount++;
+                            queueBox.innerHTML += `
+                                <tr class="border-b border-white/5 hover:bg-white/[0.01]">
+                                    <td class="p-5">
+                                        <div class="text-sm font-bold text-white">${user.email}</div>
+                                        <div class="text-[9px] text-white/20 font-mono">${uid}</div>
+                                    </td>
+                                    <td class="p-5">
+                                        <div class="text-[10px] font-mono text-gray-500 mb-1">${tx.id}</div>
+                                        <div class="inline-block px-2 py-0.5 rounded text-[8px] font-black uppercase bg-cyan-400/10 text-cyan-400">
+                                            Pending Verification
+                                        </div>
+                                    </td>
+                                    <td class="p-5 font-black text-center text-xl">$${(tx.amount || 0).toLocaleString()}</td>
+                                    <td class="p-5 text-right">
+                                        <div class="flex gap-2 justify-end">
+                                            <button onclick="approveDeposit('${uid}', ${index}, ${tx.amount})" class="bg-cyan-400 text-black px-4 py-2 rounded-xl text-[9px] font-black uppercase transition active:scale-95">Approve</button>
+                                            <button onclick="rejectDeposit('${uid}', ${index})" class="border border-red-500 text-red-500 px-4 py-2 rounded-xl text-[9px] font-black uppercase hover:bg-red-500 hover:text-white transition active:scale-95">Reject</button>
+                                        </div>
+                                    </td>
+                                </tr>`;
+                        }
+                    });
+
+                    userBox.innerHTML += `
+                        <tr class="border-b border-white/5">
+                            <td class="p-5">
+                                <div class="text-sm font-bold text-white">${user.email || 'Anonymous'}</div>
+                                <div class="text-[9px] text-white/20 font-mono">${uid}</div>
+                            </td>
+                            <td class="p-5 font-black">
+                                <div class="text-cyan-400 text-lg">$${(user.balance || 0).toLocaleString()}</div>
+                            </td>
+                            <td class="p-5 text-right space-x-1">
+                                <button onclick="editBalance('${uid}')" class="border border-white/10 text-white/40 px-3 py-1.5 rounded-lg text-[8px] font-black uppercase hover:border-cyan-400 hover:text-cyan-400">Edit Bal</button>
+                                <button onclick="deleteAccount('${uid}')" class="btn-danger px-3 py-1.5 rounded-lg text-[8px] font-black uppercase">Delete</button>
+                            </td>
+                        </tr>`;
                 });
-                if (newStatus === 'completed') {
-                    await db.collection("users").doc(uid).update({ balance: firebase.firestore.FieldValue.increment(amt) });
+
+                if (pendingCount === 0) {
+                    queueBox.innerHTML = '<tr><td colspan="4" class="p-10 text-center text-white/20 uppercase text-[10px]">No Pending Deposits</td></tr>';
                 }
-                loadQueue(); loadUsers();
+            });
+        }
+
+        async function approveDeposit(uid, index, amt) {
+            if (confirm(`Approve $${amt} for this user?`)) {
+                const userRef = db.collection("users").doc(uid);
+                const doc = await userRef.get();
+                let history = doc.data().history;
+
+                history[index].status = "Successful";
+                history[index].type = "Deposit Success";
+
+                await userRef.update({
+                    balance: firebase.firestore.FieldValue.increment(amt),
+                    history: history
+                });
+                alert("Deposit Approved!");
             }
         }
 
-        async function editField(uid, field) {
-            const val = prompt(`New value for ${field}:`);
+        async function rejectDeposit(uid, index) {
+            if (confirm("Reject this deposit?")) {
+                const userRef = db.collection("users").doc(uid);
+                const doc = await userRef.get();
+                let history = doc.data().history;
+
+                history[index].status = "Failed";
+                history[index].type = "Deposit Rejected";
+
+                await userRef.update({ history: history });
+                alert("Deposit Rejected");
+            }
+        }
+
+        async function editBalance(uid) {
+            const val = prompt("New Balance Amount:");
             if (val !== null && !isNaN(val)) {
-                await db.collection("users").doc(uid).update({ [field]: parseFloat(val) });
-                loadUsers();
-            }
-        }
-
-        async function resetAccount(uid) {
-            if (confirm("RESET ACCOUNT? This wipes balance, power, and ALL transaction history.")) {
-                await db.collection("users").doc(uid).update({ balance: 0, totalPower: 0 });
-                const txs = await db.collection("users").doc(uid).collection("transactions").get();
-                const batch = db.batch();
-                txs.forEach(doc => batch.delete(doc.ref));
-                await batch.commit();
-                alert("Account Cleaned"); loadQueue(); loadUsers();
+                await db.collection("users").doc(uid).update({ balance: parseFloat(val) });
             }
         }
 
         async function deleteAccount(uid) {
-            if (confirm("PERMANENTLY DELETE THIS USER? This cannot be undone.")) {
+            if (confirm("PERMANENTLY DELETE THIS USER?")) {
                 await db.collection("users").doc(uid).delete();
-                alert("User Erased"); loadUsers();
+                alert("User Erased");
             }
         }
     </script>
