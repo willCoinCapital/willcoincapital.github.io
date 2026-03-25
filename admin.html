@@ -11,42 +11,49 @@
         body { background: #0b0b0b; font-family: 'Plus Jakarta Sans', sans-serif; color: white; }
         .glass-card { background: #161616; border: 1px solid #222; border-radius: 24px; overflow: hidden; }
         .accent-text { color: #22d3ee; }
-        .pending-badge { background: rgba(34, 211, 238, 0.1); color: #22d3ee; border: 1px solid rgba(34, 211, 238, 0.2); }
-        
-        /* SweetAlert Dark Theme Customization */
-        .swal2-popup {
-            background: #161616 !important;
-            color: white !important;
-            border-radius: 24px !important;
-            border: 1px solid #222 !important;
-        }
-        .swal2-title { color: white !important; font-weight: 800 !important; }
-        .swal2-confirm { background-color: #22d3ee !important; color: black !important; font-weight: 700 !important; border-radius: 12px !important; }
-        .swal2-cancel { background-color: #1a1a1a !important; color: #666 !important; border-radius: 12px !important; }
+        .pending-badge { background: rgba(34, 211, 238, 0.1); color: #22d3ee; border: 1px solid rgba(34, 211, 238, 0.2); transition: all 0.3s; }
+        .pending-badge:hover { background: #22d3ee; color: #000; }
+        .hidden { display: none !important; }
+
+        /* SweetAlert Professional Dark Theme */
+        .swal2-popup { background: #161616 !cite: 14, 15]; color: white !cite: 14, 15]; border-radius: 24px !cite: 14, 15]; border: 1px solid #222 !cite: 14, 15]; }
+        .swal2-title { color: white !cite: 14, 15]; font-weight: 800 !cite: 14, 15]; }
+        .swal2-confirm { background-color: #22d3ee !cite: 14, 15]; color: black !cite: 14, 15]; font-weight: 700 !cite: 14, 15]; border-radius: 12px !cite: 14, 15]; }
+        .swal2-cancel { background-color: #ef4444 !cite: 15]; color: white !cite: 15]; font-weight: 700 !cite: 15]; border-radius: 12px !cite: 15]; }
     </style>
 </head>
 <body class="min-h-screen p-6 max-w-4xl mx-auto">
 
     <div id="gate" class="flex flex-col items-center justify-center min-h-[80vh]">
-        <h2 class="text-xs font-bold uppercase tracking-[0.3em] mb-8">Master Terminal</h2>
-        <input type="password" id="masterPin" placeholder="••••••" class="bg-[#161616] border border-white/10 rounded-xl py-4 px-6 text-center text-2xl tracking-[0.5em] focus:outline-none focus:border-cyan-400 mb-4 w-64">
-        <button onclick="unlock()" class="bg-white text-black font-extrabold py-4 px-12 rounded-xl text-xs uppercase tracking-widest">Authorize Access</button>
+        <h2 class="text-[10px] font-black uppercase tracking-[0.4em] mb-8 text-white/40">Master Root Active</h2>
+        <input type="password" id="masterPin" placeholder="••••••" class="bg-[#161616] border border-white/10 rounded-2xl py-5 px-6 text-center text-3xl tracking-[0.5em] focus:outline-none focus:border-cyan-400 mb-6 w-72">
+        <button onclick="unlock()" class="bg-white text-black font-black py-4 px-12 rounded-xl text-[10px] uppercase tracking-widest hover:scale-105 transition">Authorize Access</button>
     </div>
 
     <div id="terminal" class="hidden">
         <header class="flex justify-between items-center mb-12">
-            <h1 class="text-3xl font-black tracking-tighter">WILLCOIN <span class="opacity-30">HQ</span></h1>
-            <button onclick="location.reload()" class="bg-[#1a1a1a] text-white/40 px-5 py-2 rounded-full text-[9px] font-bold uppercase tracking-widest">Logout</button>
+            <div>
+                <p class="text-[9px] font-bold uppercase tracking-widest accent-text mb-1">• Master Terminal</p>
+                <h1 class="text-3xl font-black tracking-tighter">WILLCOIN <span class="opacity-30">HQ</span></h1>
+            </div>
+            <button onclick="location.reload()" class="bg-[#1a1a1a] text-white/40 px-5 py-2 rounded-full text-[9px] font-bold uppercase tracking-widest border border-white/5">Secure Logout</button>
         </header>
 
         <section class="mb-12">
-            <h3 class="text-[10px] font-black uppercase tracking-widest mb-6">Verification Queue</h3>
-            <div class="glass-card" id="verificationList"></div>
+            <h3 class="text-[10px] font-black uppercase tracking-widest mb-6 flex items-center">
+                <span class="w-2 h-2 bg-cyan-400 rounded-full mr-3 animate-pulse"></span> Verification Queue
+            </h3>
+            <div class="glass-card">
+                <div id="verificationList" class="divide-y divide-white/5">
+                    </div>
+            </div>
         </section>
 
         <section>
             <h3 class="text-[10px] font-black uppercase tracking-widest mb-6">Global User Directory</h3>
-            <div class="glass-card" id="userDirectory"></div>
+            <div class="glass-card">
+                <div id="userDirectory" class="divide-y divide-white/5"></div>
+            </div>
         </section>
     </div>
 
@@ -71,7 +78,7 @@
                 document.getElementById('terminal').classList.remove('hidden');
                 loadHQ();
             } else { 
-                Swal.fire({ icon: 'error', title: 'Access Denied', text: 'Invalid Master PIN', toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
+                Swal.fire({ icon: 'error', title: 'Access Denied', background: '#161616', color: '#fff', toast: true, position: 'top', showConfirmButton: false, timer: 2000 });
             }
         }
 
@@ -85,26 +92,35 @@
                     const u = doc.data();
                     const uid = doc.id;
 
-                    // User Directory Row
+                    // 1. Directory Listing
                     dList.innerHTML += `
-                    <div class="grid grid-cols-3 p-6 items-center border-b border-white/5">
-                        <p class="font-bold text-sm truncate">${u.email}</p>
-                        <p class="text-cyan-400 font-black text-xl text-center">$${(u.balance || 0).toLocaleString()}</p>
+                    <div class="grid grid-cols-3 p-6 items-center hover:bg-white/[0.02] transition">
+                        <div>
+                            <p class="font-bold text-sm truncate">${u.email}</p>
+                            <p class="text-[8px] text-white/20 mt-1">${uid}</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-cyan-400 font-black text-xl">$${(u.balance || 0).toLocaleString()}</p>
+                        </div>
                         <div class="flex justify-end gap-2">
-                            <button onclick="editBal('${uid}')" class="bg-white/5 text-[8px] font-black px-3 py-2 rounded-md uppercase">Edit</button>
+                            <button onclick="editBal('${uid}')" class="bg-white/5 text-[8px] font-black px-4 py-2 rounded-lg uppercase border border-white/5">Edit</button>
+                            <button onclick="deleteUser('${uid}')" class="bg-red-500/10 text-red-500 text-[8px] font-black px-4 py-2 rounded-lg uppercase border border-red-500/10">Delete</button>
                         </div>
                     </div>`;
 
-                    // Verification Scanner
+                    // 2. Verification Scanner (Filters for "VERIFYING" or "PENDING")
                     if (u.history && Array.isArray(u.history)) {
                         u.history.forEach((item, index) => {
                             const status = (item.status || "").toUpperCase();
                             if (status.includes("PENDING") || status.includes("VERIFYING")) {
                                 vList.innerHTML += `
-                                <div class="grid grid-cols-3 p-6 items-center border-b border-white/5">
-                                    <p class="font-bold text-sm">${u.email}</p>
+                                <div class="grid grid-cols-3 p-6 items-center hover:bg-white/[0.02]">
+                                    <div>
+                                        <p class="font-bold text-sm">${u.email}</p>
+                                        <p class="text-[8px] text-white/20 mt-1">${item.id || 'WC-TX'}</p>
+                                    </div>
                                     <div class="text-center">
-                                        <button onclick="approveDeposit('${uid}', ${index}, '${u.email}', ${item.amount})" class="pending-badge px-3 py-1 rounded text-[8px] font-black uppercase">
+                                        <button onclick="processDeposit('${uid}', ${index}, '${u.email}', ${item.amount})" class="pending-badge px-4 py-1.5 rounded-full text-[9px] font-black uppercase">
                                             ${item.status}
                                         </button>
                                     </div>
@@ -114,21 +130,28 @@
                         });
                     }
                 });
+                if(vList.innerHTML === "") vList.innerHTML = `<p class="p-16 text-center text-white/10 text-[10px] uppercase font-black tracking-[0.5em]">Queue Clear</p>`;
             });
         }
 
-        async function approveDeposit(uid, index, email, amount) {
+        // - Professional Process Logic with Decline
+        async function processDeposit(uid, index, email, amount) {
             const result = await Swal.fire({
-                title: 'Confirm Approval',
-                text: `Approve $${amount.toLocaleString()} for ${email}?`,
+                title: 'Transaction Action',
+                text: `Reviewing $${amount.toLocaleString()} for ${email}`,
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonText: 'Yes, Approve Funds',
-                cancelButtonText: 'Cancel'
+                confirmButtonText: 'Approve Funds',
+                cancelButtonText: 'Decline',
+                confirmButtonColor: '#22d3ee',
+                cancelButtonColor: '#ef4444',
+                reverseButtons: true
             });
 
+            const ref = db.collection('users').doc(uid);
+
             if (result.isConfirmed) {
-                const ref = db.collection('users').doc(uid);
+                // APPROVE
                 try {
                     await db.runTransaction(async (t) => {
                         const snap = await t.get(ref);
@@ -140,10 +163,20 @@
                             balance: (parseFloat(data.balance) || 0) + parseFloat(amount) 
                         });
                     });
-                    Swal.fire({ icon: 'success', title: 'Funds Approved', showConfirmButton: false, timer: 1500 });
-                } catch(e) { 
-                    Swal.fire({ icon: 'error', title: 'Transaction Failed', text: e.message });
-                }
+                    Swal.fire({ icon: 'success', title: 'Approved', background: '#161616', color: '#fff', showConfirmButton: false, timer: 1500 });
+                } catch(e) { Swal.fire({ icon: 'error', title: 'Error', text: e.message, background: '#161616' }); }
+            } 
+            else if (result.dismiss === Swal.DismissReason.cancel) {
+                // DECLINE
+                try {
+                    await db.runTransaction(async (t) => {
+                        const snap = await t.get(ref);
+                        let history = [...snap.data().history];
+                        history[index].status = "Failed";
+                        t.update(ref, { history: history });
+                    });
+                    Swal.fire({ icon: 'info', title: 'Declined', text: 'Marked as Failed', background: '#161616', color: '#fff', showConfirmButton: false, timer: 1500 });
+                } catch(e) { Swal.fire({ icon: 'error', title: 'Error', text: e.message, background: '#161616' }); }
             }
         }
 
@@ -151,14 +184,16 @@
             const { value: newBal } = await Swal.fire({
                 title: 'Adjust Balance',
                 input: 'number',
-                inputLabel: 'Enter the new balance amount',
-                inputPlaceholder: 'e.g. 5000',
-                showCancelButton: true
+                inputPlaceholder: 'New Amount',
+                showCancelButton: true,
+                confirmButtonText: 'Update'
             });
-            if (newBal) {
-                await db.collection('users').doc(id).update({ balance: parseFloat(newBal) });
-                Swal.fire('Updated!', 'Balance has been changed.', 'success');
-            }
+            if (newBal) await db.collection('users').doc(id).update({ balance: parseFloat(newBal) });
+        }
+
+        async function deleteUser(id) {
+            const result = await Swal.fire({ title: 'Delete User?', text: "This cannot be undone!", icon: 'warning', showCancelButton: true, confirmButtonText: 'Yes, Delete' });
+            if (result.isConfirmed) await db.collection('users').doc(id).delete();
         }
     </script>
 </body>
