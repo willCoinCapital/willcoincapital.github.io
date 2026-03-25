@@ -10,7 +10,7 @@
         body { background: #0b0b0b; font-family: 'Plus Jakarta Sans', sans-serif; color: white; }
         .glass-card { background: #161616; border: 1px solid #222; border-radius: 24px; overflow: hidden; }
         .accent-text { color: #22d3ee; }
-        .pending-badge { background: rgba(34, 211, 238, 0.1); color: #22d3ee; border: 1px solid rgba(34, 211, 238, 0.2); }
+        .pending-badge { background: rgba(255, 165, 0, 0.1); color: #ffa500; border: 1px solid rgba(255, 165, 0, 0.2); }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -22,7 +22,7 @@
         </div>
         <h2 class="text-xs font-bold uppercase tracking-[0.3em] mb-8">Master Terminal</h2>
         <input type="password" id="masterPin" placeholder="••••••" class="bg-[#161616] border border-white/10 rounded-xl py-4 px-6 text-center text-2xl tracking-[0.5em] focus:outline-none focus:border-cyan-400 mb-4 w-64">
-        <button onclick="unlock()" class="bg-white text-black font-extrabold py-4 px-12 rounded-xl text-xs uppercase tracking-widest hover:scale-105 transition">Authorize Access</button>
+        <button onclick="unlock()" class="bg-white text-black font-extrabold py-4 px-12 rounded-xl text-xs uppercase tracking-widest">Authorize Access</button>
     </div>
 
     <div id="terminal" class="hidden">
@@ -44,8 +44,7 @@
                     <span class="text-center">Details</span>
                     <span class="text-right">Amount</span>
                 </div>
-                <div id="verificationList" class="divide-y divide-white/5">
-                    </div>
+                <div id="verificationList" class="divide-y divide-white/5"></div>
             </div>
         </section>
 
@@ -55,10 +54,9 @@
                 <div class="grid grid-cols-3 p-4 border-b border-white/5 text-[9px] font-bold uppercase text-white/20 tracking-widest">
                     <span>Account</span>
                     <span class="text-center">Balance</span>
-                    <span class="text-right">Account Actions</span>
+                    <span class="text-right">Actions</span>
                 </div>
-                <div id="userDirectory" class="divide-y divide-white/5">
-                    </div>
+                <div id="userDirectory" class="divide-y divide-white/5"></div>
             </div>
         </section>
     </div>
@@ -97,7 +95,7 @@
                     const u = doc.data();
                     const uid = doc.id;
 
-                    // 1. ADD TO DIRECTORY
+                    // Directory Listing
                     dList.innerHTML += `
                     <div class="grid grid-cols-3 p-6 items-center hover:bg-white/[0.02]">
                         <div class="overflow-hidden">
@@ -108,15 +106,17 @@
                             <p class="text-cyan-400 font-black text-xl">$${(u.balance || 0).toLocaleString()}</p>
                         </div>
                         <div class="flex justify-end gap-2">
-                            <button onclick="editBal('${uid}')" class="bg-white/5 text-[8px] font-black uppercase px-3 py-2 rounded-md border border-white/5">Edit Bal</button>
-                            <button onclick="deleteUser('${uid}')" class="bg-red-500/10 text-red-500 text-[8px] font-black uppercase px-3 py-2 rounded-md border border-red-500/10">Delete</button>
+                            <button onclick="editBal('${uid}')" class="bg-white/5 text-[8px] font-black px-3 py-2 rounded-md border border-white/5 uppercase">Edit Bal</button>
+                            <button onclick="deleteUser('${uid}')" class="bg-red-500/10 text-red-500 text-[8px] font-black px-3 py-2 rounded-md border border-red-500/10 uppercase">Delete</button>
                         </div>
                     </div>`;
 
-                    // 2. SCAN HISTORY FOR PENDING VERIFICATION
+                    // Smart-Scan History for Pending items
                     if (u.history && Array.isArray(u.history)) {
                         u.history.forEach((item, index) => {
-                            if (item.status && item.status.toLowerCase().includes("pending")) {
+                            const status = (item.status || "").toUpperCase();
+                            // This catch matches "Pending", "Deposit Pending", or "VERIFYING"
+                            if (status.includes("PENDING") || status.includes("VERIFYING")) {
                                 vList.innerHTML += `
                                 <div class="grid grid-cols-3 p-6 items-center hover:bg-white/[0.02]">
                                     <div>
@@ -124,8 +124,10 @@
                                         <p class="text-[8px] text-white/20 mt-1">${uid}</p>
                                     </div>
                                     <div class="flex flex-col items-center">
-                                        <p class="text-[8px] text-white/40 mb-2 uppercase tracking-tighter">${item.id || 'TRX-REF'}</p>
-                                        <button onclick="approveDeposit('${uid}', ${index})" class="pending-badge px-3 py-1 rounded text-[8px] font-bold uppercase tracking-tighter">Pending Verification</button>
+                                        <p class="text-[8px] text-white/40 mb-2 uppercase tracking-tighter">${item.id || 'WC-TRX'}</p>
+                                        <button onclick="approveDeposit('${uid}', ${index})" class="pending-badge px-3 py-1 rounded text-[8px] font-black uppercase tracking-tighter">
+                                            ${item.status}
+                                        </button>
                                     </div>
                                     <div class="text-right">
                                         <p class="text-white font-black text-2xl">$${(item.amount || 0).toLocaleString()}</p>
@@ -141,21 +143,23 @@
         }
 
         async function approveDeposit(uid, index) {
-            if(!confirm("Approve this deposit? Funds will be added to balance.")) return;
+            if(!confirm("Approve this deposit? Funds will be added to user balance.")) return;
             const ref = db.collection('users').doc(uid);
-            await db.runTransaction(async (t) => {
-                const snap = await t.get(ref);
-                let data = snap.data();
-                let history = data.history;
-                let amt = history[index].amount;
-                
-                history[index].status = "Successful";
-                t.update(ref, { 
-                    history: history, 
-                    balance: (data.balance || 0) + amt 
+            try {
+                await db.runTransaction(async (t) => {
+                    const snap = await t.get(ref);
+                    let data = snap.data();
+                    let history = data.history;
+                    let amt = history[index].amount;
+                    
+                    history[index].status = "Successful";
+                    t.update(ref, { 
+                        history: history, 
+                        balance: (data.balance || 0) + amt 
+                    });
                 });
-            });
-            alert("Deposit Approved");
+                alert("Deposit Approved Successfully");
+            } catch(e) { alert("Error: " + e.message); }
         }
 
         async function editBal(id) {
