@@ -5,21 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WILLCOIN | HQ</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
         body { background: #0b0b0b; font-family: 'Plus Jakarta Sans', sans-serif; color: white; }
         .glass-card { background: #161616; border: 1px solid #222; border-radius: 24px; overflow: hidden; }
         .accent-text { color: #22d3ee; }
-        .pending-badge { background: rgba(255, 165, 0, 0.1); color: #ffa500; border: 1px solid rgba(255, 165, 0, 0.2); }
-        .hidden { display: none !important; }
+        .pending-badge { background: rgba(34, 211, 238, 0.1); color: #22d3ee; border: 1px solid rgba(34, 211, 238, 0.2); }
+        
+        /* SweetAlert Dark Theme Customization */
+        .swal2-popup {
+            background: #161616 !important;
+            color: white !important;
+            border-radius: 24px !important;
+            border: 1px solid #222 !important;
+        }
+        .swal2-title { color: white !important; font-weight: 800 !important; }
+        .swal2-confirm { background-color: #22d3ee !important; color: black !important; font-weight: 700 !important; border-radius: 12px !important; }
+        .swal2-cancel { background-color: #1a1a1a !important; color: #666 !important; border-radius: 12px !important; }
     </style>
 </head>
 <body class="min-h-screen p-6 max-w-4xl mx-auto">
 
     <div id="gate" class="flex flex-col items-center justify-center min-h-[80vh]">
-        <div class="w-16 h-16 bg-cyan-400/10 rounded-2xl flex items-center justify-center mb-6 border border-cyan-400/20">
-            <svg class="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-        </div>
         <h2 class="text-xs font-bold uppercase tracking-[0.3em] mb-8">Master Terminal</h2>
         <input type="password" id="masterPin" placeholder="••••••" class="bg-[#161616] border border-white/10 rounded-xl py-4 px-6 text-center text-2xl tracking-[0.5em] focus:outline-none focus:border-cyan-400 mb-4 w-64">
         <button onclick="unlock()" class="bg-white text-black font-extrabold py-4 px-12 rounded-xl text-xs uppercase tracking-widest">Authorize Access</button>
@@ -27,37 +35,18 @@
 
     <div id="terminal" class="hidden">
         <header class="flex justify-between items-center mb-12">
-            <div>
-                <p class="text-[9px] font-bold uppercase tracking-widest accent-text mb-1">• Master Root Active</p>
-                <h1 class="text-3xl font-black tracking-tighter">WILLCOIN <span class="opacity-30">HQ</span></h1>
-            </div>
-            <button onclick="location.reload()" class="bg-[#1a1a1a] text-white/40 border border-white/5 px-5 py-2 rounded-full text-[9px] font-bold uppercase tracking-widest">Secure Logout</button>
+            <h1 class="text-3xl font-black tracking-tighter">WILLCOIN <span class="opacity-30">HQ</span></h1>
+            <button onclick="location.reload()" class="bg-[#1a1a1a] text-white/40 px-5 py-2 rounded-full text-[9px] font-bold uppercase tracking-widest">Logout</button>
         </header>
 
         <section class="mb-12">
-            <h3 class="flex items-center text-[10px] font-black uppercase tracking-widest mb-6">
-                <span class="w-2 h-2 bg-cyan-400 rounded-full mr-3 animate-pulse"></span> Verification Queue
-            </h3>
-            <div class="glass-card">
-                <div class="grid grid-cols-3 p-4 border-b border-white/5 text-[9px] font-bold uppercase text-white/20 tracking-widest">
-                    <span>User Account</span>
-                    <span class="text-center">Details</span>
-                    <span class="text-right">Amount</span>
-                </div>
-                <div id="verificationList" class="divide-y divide-white/5"></div>
-            </div>
+            <h3 class="text-[10px] font-black uppercase tracking-widest mb-6">Verification Queue</h3>
+            <div class="glass-card" id="verificationList"></div>
         </section>
 
         <section>
             <h3 class="text-[10px] font-black uppercase tracking-widest mb-6">Global User Directory</h3>
-            <div class="glass-card">
-                <div class="grid grid-cols-3 p-4 border-b border-white/5 text-[9px] font-bold uppercase text-white/20 tracking-widest">
-                    <span>Account</span>
-                    <span class="text-center">Balance</span>
-                    <span class="text-right">Actions</span>
-                </div>
-                <div id="userDirectory" class="divide-y divide-white/5"></div>
-            </div>
+            <div class="glass-card" id="userDirectory"></div>
         </section>
     </div>
 
@@ -81,94 +70,95 @@
                 document.getElementById('gate').classList.add('hidden');
                 document.getElementById('terminal').classList.remove('hidden');
                 loadHQ();
-            } else { alert("ACCESS DENIED"); }
+            } else { 
+                Swal.fire({ icon: 'error', title: 'Access Denied', text: 'Invalid Master PIN', toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
+            }
         }
 
         function loadHQ() {
             db.collection('users').onSnapshot(snap => {
                 const vList = document.getElementById('verificationList');
                 const dList = document.getElementById('userDirectory');
-                vList.innerHTML = "";
-                dList.innerHTML = "";
+                vList.innerHTML = ""; dList.innerHTML = "";
 
                 snap.forEach(doc => {
                     const u = doc.data();
                     const uid = doc.id;
 
-                    // Directory Listing
+                    // User Directory Row
                     dList.innerHTML += `
-                    <div class="grid grid-cols-3 p-6 items-center hover:bg-white/[0.02]">
-                        <div class="overflow-hidden">
-                            <p class="font-bold text-sm truncate">${u.email}</p>
-                            <p class="text-[8px] text-white/20 truncate mt-1">${uid}</p>
-                        </div>
-                        <div class="text-center">
-                            <p class="text-cyan-400 font-black text-xl">$${(u.balance || 0).toLocaleString()}</p>
-                        </div>
+                    <div class="grid grid-cols-3 p-6 items-center border-b border-white/5">
+                        <p class="font-bold text-sm truncate">${u.email}</p>
+                        <p class="text-cyan-400 font-black text-xl text-center">$${(u.balance || 0).toLocaleString()}</p>
                         <div class="flex justify-end gap-2">
-                            <button onclick="editBal('${uid}')" class="bg-white/5 text-[8px] font-black px-3 py-2 rounded-md border border-white/5 uppercase">Edit Bal</button>
-                            <button onclick="deleteUser('${uid}')" class="bg-red-500/10 text-red-500 text-[8px] font-black px-3 py-2 rounded-md border border-red-500/10 uppercase">Delete</button>
+                            <button onclick="editBal('${uid}')" class="bg-white/5 text-[8px] font-black px-3 py-2 rounded-md uppercase">Edit</button>
                         </div>
                     </div>`;
 
-                    // Smart-Scan History for Pending items
+                    // Verification Scanner
                     if (u.history && Array.isArray(u.history)) {
                         u.history.forEach((item, index) => {
                             const status = (item.status || "").toUpperCase();
-                            // This catch matches "Pending", "Deposit Pending", or "VERIFYING"
                             if (status.includes("PENDING") || status.includes("VERIFYING")) {
                                 vList.innerHTML += `
-                                <div class="grid grid-cols-3 p-6 items-center hover:bg-white/[0.02]">
-                                    <div>
-                                        <p class="font-bold text-sm">${u.email}</p>
-                                        <p class="text-[8px] text-white/20 mt-1">${uid}</p>
-                                    </div>
-                                    <div class="flex flex-col items-center">
-                                        <p class="text-[8px] text-white/40 mb-2 uppercase tracking-tighter">${item.id || 'WC-TRX'}</p>
-                                        <button onclick="approveDeposit('${uid}', ${index})" class="pending-badge px-3 py-1 rounded text-[8px] font-black uppercase tracking-tighter">
+                                <div class="grid grid-cols-3 p-6 items-center border-b border-white/5">
+                                    <p class="font-bold text-sm">${u.email}</p>
+                                    <div class="text-center">
+                                        <button onclick="approveDeposit('${uid}', ${index}, '${u.email}', ${item.amount})" class="pending-badge px-3 py-1 rounded text-[8px] font-black uppercase">
                                             ${item.status}
                                         </button>
                                     </div>
-                                    <div class="text-right">
-                                        <p class="text-white font-black text-2xl">$${(item.amount || 0).toLocaleString()}</p>
-                                    </div>
+                                    <p class="text-white font-black text-2xl text-right">$${(item.amount || 0).toLocaleString()}</p>
                                 </div>`;
                             }
                         });
                     }
                 });
-
-                if(vList.innerHTML === "") vList.innerHTML = `<p class="p-12 text-center text-white/10 text-[10px] uppercase font-bold tracking-widest">Queue Clear</p>`;
             });
         }
 
-        async function approveDeposit(uid, index) {
-            if(!confirm("Approve this deposit? Funds will be added to user balance.")) return;
-            const ref = db.collection('users').doc(uid);
-            try {
-                await db.runTransaction(async (t) => {
-                    const snap = await t.get(ref);
-                    let data = snap.data();
-                    let history = data.history;
-                    let amt = history[index].amount;
-                    
-                    history[index].status = "Successful";
-                    t.update(ref, { 
-                        history: history, 
-                        balance: (data.balance || 0) + amt 
+        async function approveDeposit(uid, index, email, amount) {
+            const result = await Swal.fire({
+                title: 'Confirm Approval',
+                text: `Approve $${amount.toLocaleString()} for ${email}?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Approve Funds',
+                cancelButtonText: 'Cancel'
+            });
+
+            if (result.isConfirmed) {
+                const ref = db.collection('users').doc(uid);
+                try {
+                    await db.runTransaction(async (t) => {
+                        const snap = await t.get(ref);
+                        let data = snap.data();
+                        let history = [...data.history];
+                        history[index].status = "Successful";
+                        t.update(ref, { 
+                            history: history, 
+                            balance: (parseFloat(data.balance) || 0) + parseFloat(amount) 
+                        });
                     });
-                });
-                alert("Deposit Approved Successfully");
-            } catch(e) { alert("Error: " + e.message); }
+                    Swal.fire({ icon: 'success', title: 'Funds Approved', showConfirmButton: false, timer: 1500 });
+                } catch(e) { 
+                    Swal.fire({ icon: 'error', title: 'Transaction Failed', text: e.message });
+                }
+            }
         }
 
         async function editBal(id) {
-            const val = prompt("Enter New Balance:");
-            if(val) await db.collection('users').doc(id).update({ balance: parseFloat(val) });
-        }
-
-        async function deleteUser(id) {
-            if(confirm("Permanently delete this user?")) await db.collection('users').doc(id).delete();
+            const { value: newBal } = await Swal.fire({
+                title: 'Adjust Balance',
+                input: 'number',
+                inputLabel: 'Enter the new balance amount',
+                inputPlaceholder: 'e.g. 5000',
+                showCancelButton: true
+            });
+            if (newBal) {
+                await db.collection('users').doc(id).update({ balance: parseFloat(newBal) });
+                Swal.fire('Updated!', 'Balance has been changed.', 'success');
+            }
         }
     </script>
 </body>
