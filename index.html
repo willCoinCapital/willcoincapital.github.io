@@ -10,17 +10,21 @@
         body { background: #000; font-family: 'Plus Jakarta Sans', sans-serif; color: white; margin: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
         .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
         
-        .header-section { margin-top: 50px; text-align: center; } 
-        .auth-container { margin-top: auto; margin-bottom: 60px; padding: 0 24px; } 
+        /* HEADER - Fixed at top */
+        .header-section { margin-top: 40px; text-align: center; flex-shrink: 0; } 
 
-        /* WORKFLOW STYLING */
-        .workflow { display: flex; justify-content: space-between; width: 100%; max-width: 340px; margin: 30px auto 0; text-align: center; animation: fadeIn 1s ease-out; }
-        .step { flex: 1; padding: 0 10px; }
-        .step-num { font-size: 10px; font-weight: 800; color: #22d3ee; display: block; margin-bottom: 4px; text-transform: uppercase; }
-        .step-label { font-size: 11px; font-weight: 700; display: block; margin-bottom: 2px; }
-        .step-desc { font-size: 9px; color: #6b7280; line-height: 1.2; }
+        /* WORKFLOW - Centered in the available middle space */
+        .workflow-container { flex-grow: 1; display: flex; align-items: center; justify-content: center; padding: 0 24px; }
+        .workflow-content { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 16px; animation: fadeIn 1s ease-out; }
+        
+        .step-row { display: flex; gap: 14px; align-items: flex-start; }
+        .step-num { font-size: 10px; font-weight: 800; color: #22d3ee; background: rgba(34, 211, 238, 0.1); padding: 4px 8px; border-radius: 6px; text-transform: uppercase; }
+        .step-text { font-size: 11px; line-height: 1.5; color: #e5e7eb; font-weight: 600; }
+        .step-text span { color: #22d3ee; font-weight: 800; }
 
-        /* STATUS DOT ANIMATION */
+        /* AUTH - Fixed at bottom */
+        .auth-container { margin-bottom: 40px; padding: 0 24px; flex-shrink: 0; } 
+
         .status-dot { width: 6px; height: 6px; background: #22d3ee; border-radius: 50%; display: inline-block; margin-right: 6px; vertical-align: middle; box-shadow: 0 0 10px #22d3ee; animation: blink 1.5s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -40,21 +44,20 @@
         </p>
     </div>
 
-    <div class="workflow">
-        <div class="step">
-            <span class="step-num">01</span>
-            <span class="step-label">Deposit</span>
-            <span class="step-desc">Fund via BTC</span>
-        </div>
-        <div class="step" style="border-left: 1px solid rgba(255,255,255,0.08); border-right: 1px solid rgba(255,255,255,0.08);">
-            <span class="step-num">02</span>
-            <span class="step-label">Stake</span>
-            <span class="step-desc">Set your cycle</span>
-        </div>
-        <div class="step">
-            <span class="step-num">03</span>
-            <span class="step-label">Yield</span>
-            <span class="step-desc">50% in 7 days</span>
+    <div class="workflow-container">
+        <div class="workflow-content">
+            <div class="step-row">
+                <div class="step-num">01</div>
+                <p class="step-text"><span>Deposit:</span> Fund your secure wallet via BTC.</p>
+            </div>
+            <div class="step-row">
+                <div class="step-num">02</div>
+                <p class="step-text"><span>Stake:</span> Choose your cycle amount using the slider.</p>
+            </div>
+            <div class="step-row">
+                <div class="step-num">03</div>
+                <p class="step-text"><span>Yield:</span> Automated smart contracts distribute 50% yield over 7 days.</p>
+            </div>
         </div>
     </div>
 
@@ -124,23 +127,11 @@
         async function handleAuth() {
             const emailInput = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
-
             if (!emailInput || !password) return notify("Fill all fields");
-            
             try {
-                if (isLoginMode) { 
-                    await auth.signInWithEmailAndPassword(emailInput, password); 
-                } else { 
-                    if(password.length < 6) return notify("Password min 6 chars");
-                    await auth.createUserWithEmailAndPassword(emailInput, password);
-                }
-            } catch (error) { 
-                let msg = error.message;
-                if (error.code === 'auth/email-already-in-use') msg = "Email already registered";
-                if (error.code === 'auth/wrong-password') msg = "Invalid password";
-                if (error.code === 'auth/user-not-found') msg = "No account found with this email";
-                notify(msg); 
-            }
+                if (isLoginMode) { await auth.signInWithEmailAndPassword(emailInput, password); } 
+                else { if(password.length < 6) return notify("Password min 6 chars"); await auth.createUserWithEmailAndPassword(emailInput, password); }
+            } catch (error) { notify(error.message); }
         }
     </script>
 </body>
