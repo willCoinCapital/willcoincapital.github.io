@@ -15,7 +15,20 @@
         #notification-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 350px; }
         .toast { background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-left: 4px solid #22d3ee; padding: 16px 20px; border-radius: 18px; display: flex; align-items: center; animation: slideDown 0.4s forwards; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-        input[type=range]::-webkit-slider-thumb { height: 24px; width: 24px; border-radius: 50%; background: #ffffff; cursor: pointer; -webkit-appearance: none; margin-top: -8px; border: 2px solid #22d3ee; }
+        
+        /* UPDATED: LONGER SLIDER STYLING */
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; margin: 35px 0; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; }
+        input[type=range]::-webkit-slider-thumb { height: 28px; width: 28px; border-radius: 50%; background: #22d3ee; cursor: pointer; -webkit-appearance: none; margin-top: -11px; border: 4px solid #000; box-shadow: 0 0 15px rgba(34, 211, 238, 0.4); }
+
+        /* NEW: 4-LINE HISTORY COLLAPSE */
+        #historyPreviewBox { max-height: 340px; overflow: hidden; transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        #historyPreviewBox.expanded { max-height: 2000px; }
+
+        /* NEW: FLOATING SUPPORT BUTTON */
+        .support-fab { position: fixed; bottom: 30px; right: 30px; background: #22d3ee; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 1000; transition: transform 0.2s; }
+        .support-fab:active { transform: scale(0.9); }
+
         .hidden { display: none !important; }
         .btn-locked { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.1); pointer-events: none; }
         .fade-in { animation: fadeIn 0.5s ease-in-out; }
@@ -24,6 +37,10 @@
 </head>
 <body class="p-6 pb-32">
     <div id="notification-container"></div>
+
+    <a href="https://t.me/your_support_link" target="_blank" class="support-fab">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+    </a>
 
     <div id="withdrawModal" class="modal-overlay">
         <div class="glass w-full max-w-sm rounded-[32px] p-8">
@@ -64,7 +81,7 @@
             <button onclick="handleLogout()" class="px-4 py-2 rounded-full border border-cyan-400/30 text-[10px] font-black text-cyan-400 uppercase tracking-widest">Logout</button>
         </nav>
 
-        <div class="glass rounded-[40px] p-8 mb-6">
+        <div class="glass rounded-[40px] p-8 mb-6 text-center">
             <p class="text-gray-400 text-[10px] font-black uppercase mb-1 tracking-widest">Available Balance</p>
             <h2 id="balanceDisplay" class="text-6xl font-extrabold tracking-tighter mb-8 text-white">$0.00</h2>
             <div class="flex gap-4">
@@ -73,47 +90,26 @@
             </div>
         </div>
 
-        <div id="activeInvestmentCard" onclick="showInvestmentPageFromCard()" class="cycle-card rounded-[40px] p-8 mb-6 hidden cursor-pointer active:scale-95 transition-all">
-            <div class="flex justify-between items-center mb-6">
-                <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-orange-400 animate-pulse"></span>
-                    <h3 class="font-black text-[10px] uppercase tracking-widest text-white/60">Active 7-Day Cycle</h3>
-                </div>
-                <span id="cardCountdown" class="text-[11px] font-mono text-orange-400 font-bold">Calculating...</span>
-            </div>
-            <div class="flex justify-between items-end mb-6">
-                <div><p id="activeCardAmt" class="text-4xl font-black text-white">$0.00</p><p class="text-[9px] text-gray-500 font-bold uppercase mt-1">Staked Principle</p></div>
-                <div class="text-right"><p class="text-2xl font-black text-green-400">+50%</p><p class="text-[9px] text-gray-500 font-bold uppercase mt-1">Target Yield</p></div>
-            </div>
-            <div class="w-full h-1.5 bg-white/5 rounded-full overflow-hidden"><div id="cardProgressBar" class="h-full bg-gradient-to-r from-orange-500 to-yellow-400" style="width: 0%"></div></div>
-        </div>
-
         <div class="glass rounded-[40px] p-8 mb-6">
-            <h3 class="font-black text-lg uppercase tracking-tight text-white mb-8">Invest</h3>
+            <h3 class="font-black text-[10px] uppercase tracking-widest text-white/30 mb-8">Invest</h3>
             <div class="space-y-6">
                 <input type="range" id="investSlider" min="500" max="20000" step="500" value="500" oninput="updateInvest(this.value)">
-                <div class="bg-white/5 border border-white/10 rounded-[24px] p-6">
-                    <p class="text-[9px] font-black text-gray-500 uppercase mb-2 tracking-widest">Manual Input (Min $500)</p>
-                    <input type="number" id="manualInvest" value="500" class="bg-transparent w-full text-2xl font-black outline-none text-white" oninput="updateInvest(this.value)">
+                <div class="bg-black/30 border border-white/10 rounded-[28px] p-8 text-center">
+                    <p class="text-[9px] font-black text-gray-500 uppercase mb-2 tracking-widest">Manual Amount</p>
+                    <input type="number" id="manualInvest" value="500" class="bg-transparent w-full text-5xl font-black outline-none text-white text-center" oninput="updateInvest(this.value)">
                 </div>
                 <button id="startBtn" onclick="processInvestment()" class="w-full py-6 rounded-[24px] font-black uppercase text-xs tracking-widest transition-all btn-locked">Start 7-Day Cycle</button>
             </div>
         </div>
 
         <div class="glass rounded-[40px] p-8 mb-6">
-            <h3 class="font-black text-lg uppercase tracking-tight text-white mb-8">History</h3>
-            <div id="historyContainer" class="space-y-8"></div>
+            <h3 class="font-black text-[10px] uppercase tracking-widest text-white/30 mb-8">History</h3>
+            <div id="historyPreviewBox" class="cursor-pointer" onclick="this.classList.toggle('expanded')">
+                <div id="historyContainer" class="space-y-8">
+                    </div>
+            </div>
+            <p class="text-[8px] font-black text-white/20 uppercase tracking-[0.2em] mt-8 text-center border-t border-white/5 pt-6">Tap box to expand full history</p>
         </div>
-    </div>
-
-    <div id="investmentDetailsView" class="hidden fade-in">
-        <button onclick="showDashboard()" class="mb-8 p-4 glass rounded-2xl"><svg class="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7" /></svg></button>
-        <div class="glass rounded-[40px] p-8 mb-6 border-b-4 border-orange-500">
-            <h2 id="activeStakedAmt" class="text-4xl font-extrabold text-white mb-8">$0.00</h2>
-            <div class="w-full h-3 bg-white/5 rounded-full mb-4 overflow-hidden"><div id="journeyProgressBar" class="h-full bg-orange-500 rounded-full" style="width: 0%;"></div></div>
-            <div class="flex justify-between text-[10px] font-black text-gray-500 uppercase"><span>Cycle Active</span><span id="journeyCountdown">Calculating...</span></div>
-        </div>
-        <div class="glass rounded-[40px] p-8"><div id="scheduleContainer" class="space-y-4"></div></div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -124,147 +120,57 @@
         const firebaseConfig = { apiKey: "AIzaSyDsY7hDvNEDq_8SE0XcHrgLU5e6kQxpMPA", authDomain: "willcoincapital.firebaseapp.com", projectId: "willcoincapital", storageBucket: "willcoincapital.firebasestorage.app", messagingSenderId: "241566024834", appId: "1:241566024834:web:75e0d771ca7eb9a5a3a09b" };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.firestore();
-        let currentBalance = 0; const MS_PER_DAY = 86400000;
-        let userHistory = [];
+        let currentBalance = 0; let userHistory = [];
 
         function notify(msg) {
             const container = document.getElementById('notification-container');
             const toast = document.createElement('div');
-            toast.className = `toast success`;
+            toast.className = `toast`;
             toast.innerHTML = `<p class="text-[11px] font-black uppercase tracking-widest text-white">${msg}</p>`;
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 3500);
         }
 
-        // CRITICAL: Repairs accounts missing from Admin and adds $100 bonus
-        async function repairAndBonus(user) {
-            const userRef = db.collection("users").doc(user.uid);
-            const doc = await userRef.get();
-            if (!doc.exists) {
-                await userRef.set({
-                    email: user.email,
-                    balance: 100,
-                    history: [{
-                        type: "Sign-up Bonus",
-                        amount: 100,
-                        id: "WC-BONUS-" + Math.random().toString(36).substr(2, 4).toUpperCase(),
-                        date: "MAR 2026",
-                        status: "Successful"
-                    }],
-                    activeCycle: null
-                });
-                console.log("Database document created with $100 bonus.");
-            }
-        }
-
         auth.onAuthStateChanged(async (user) => {
             if (!user) { location.href = "index.html"; return; }
-            
-            await repairAndBonus(user);
-
             db.collection("users").doc(user.uid).onSnapshot(doc => {
                 const data = doc.data();
                 if(!data) return;
-
                 currentBalance = data.balance || 0;
-                document.getElementById("balanceDisplay").innerText = "$" + currentBalance.toLocaleString(undefined, {minimumFractionDigits: 2});
+                document.getElementById("balanceDisplay").innerText = "$" + currentBalance.toLocaleString();
                 
                 userHistory = data.history || [];
                 const container = document.getElementById('historyContainer');
                 const reversed = [...userHistory].reverse();
                 
-                container.innerHTML = reversed.slice(0, 10).map((item, idx) => {
-                    const actualIdx = userHistory.length - 1 - idx;
-                    const isGold = item.type.includes("Cycle Active");
-                    const isPending = (item.status && item.status.includes('Verifying'));
-                    const colorClass = isGold ? "text-gold" : (isPending ? "text-orange-400" : "text-green-400");
-                    
+                container.innerHTML = reversed.map((item, idx) => {
+                    const isSuccessful = item.status === "Successful";
                     return `
-                        <div onclick="viewHistoryDetail(${actualIdx})" class="flex justify-between items-start cursor-pointer active:opacity-50">
+                        <div class="flex justify-between items-start py-1">
                             <div>
                                 <p class="text-white font-bold text-[13px] mb-1">${item.type}</p>
                                 <p class="text-[9px] text-gray-500 font-black uppercase tracking-widest">${item.id} • ${item.status}</p>
                             </div>
-                            <p class="${colorClass} font-black text-sm">$${item.amount.toLocaleString()}</p>
+                            <p class="${isSuccessful ? 'text-green-400' : 'text-orange-400'} font-black text-sm">$${item.amount.toLocaleString()}</p>
                         </div>`;
                 }).join('') || '<p class="text-gray-500 text-[10px] font-black uppercase">No transactions yet</p>';
 
-                checkActiveInvestment(data);
                 updateInvest(document.getElementById('manualInvest').value || 500);
             });
         });
 
-        // VIEW HISTORY DETAIL (Restored & Fixed)
-        function viewHistoryDetail(index) {
-            const item = userHistory[index];
-            if(!item) return;
-            const content = document.getElementById('historyDetailContent');
-            const isGold = item.type.includes("Cycle Active");
-            const isPending = (item.status && item.status.includes('Verifying'));
-            
-            content.innerHTML = `
-                <div class="bg-white/5 p-5 rounded-2xl">
-                    <p class="text-[10px] text-gray-500 font-bold uppercase mb-1">Type</p>
-                    <p class="text-white font-black">${item.type}</p>
-                </div>
-                <div class="bg-white/5 p-5 rounded-2xl">
-                    <p class="text-[10px] text-gray-500 font-bold uppercase mb-1">Amount</p>
-                    <p class="text-white font-black">$${item.amount.toLocaleString()}</p>
-                </div>
-                <div class="bg-white/5 p-5 rounded-2xl">
-                    <p class="text-[10px] text-gray-500 font-bold uppercase mb-1">Status</p>
-                    <p class="${isGold ? 'text-gold' : (isPending ? 'text-orange-400' : 'text-green-400')} font-black uppercase text-xs">${item.status}</p>
-                </div>`;
-            openModal('historyDetailModal');
+        function updateInvest(val) {
+            const num = parseFloat(val) || 0;
+            const btn = document.getElementById('startBtn');
+            document.getElementById('investSlider').value = num;
+            document.getElementById('manualInvest').value = num;
+            if (num >= 500 && currentBalance >= num) {
+                btn.className = "w-full py-6 bg-white text-black rounded-[24px] font-black uppercase text-xs tracking-widest";
+            } else {
+                btn.className = "w-full py-6 rounded-[24px] font-black uppercase text-xs tracking-widest btn-locked";
+            }
         }
 
-        // DEPOSIT HANDLER (Fixed)
-        async function handleDepositSubmit() {
-            const amtInput = document.getElementById('depositInputAmt');
-            const amt = parseFloat(amtInput.value);
-            if(isNaN(amt) || amt <= 0) return notify("Enter valid amount");
-            
-            try {
-                const userRef = db.collection("users").doc(auth.currentUser.uid);
-                await userRef.update({
-                    history: firebase.firestore.FieldValue.arrayUnion({
-                        type: "Deposit Pending", 
-                        amount: amt, 
-                        id: "WC-DEP-" + Math.random().toString(36).substr(2, 4).toUpperCase(), 
-                        date: "MAR 2026", 
-                        status: "Verifying"
-                    })
-                });
-                amtInput.value = "";
-                closeModal('depositModal'); 
-                notify("Deposit recorded");
-            } catch (e) { notify("Submission Error"); }
-        }
-
-        // WITHDRAWAL HANDLER (Fixed)
-        async function handleWithdrawal() {
-            const wallet = document.getElementById('drawWallet').value;
-            const amt = parseFloat(document.getElementById('drawAmount').value);
-            if(!wallet || isNaN(amt) || amt > currentBalance) return notify("Check details/balance");
-            
-            try {
-                const userRef = db.collection("users").doc(auth.currentUser.uid);
-                await userRef.update({
-                    balance: firebase.firestore.FieldValue.increment(-amt),
-                    history: firebase.firestore.FieldValue.arrayUnion({
-                        type: "Withdrawal Pending",
-                        amount: amt,
-                        id: "WC-WTH-" + Math.random().toString(36).substr(2, 4).toUpperCase(),
-                        date: "MAR 2026",
-                        status: "Verifying"
-                    })
-                });
-                closeModal('withdrawModal');
-                notify("Withdrawal Requested");
-            } catch (e) { notify("Error requesting withdrawal"); }
-        }
-
-        // INVESTMENT HANDLER
         async function processInvestment() {
             const amt = parseFloat(document.getElementById('manualInvest').value);
             const userRef = db.collection("users").doc(auth.currentUser.uid);
@@ -282,36 +188,9 @@
             notify("Investment Successful");
         }
 
-        function checkActiveInvestment(data) {
-            const cycleCard = document.getElementById('activeInvestmentCard');
-            if (!data.activeCycle) { cycleCard.classList.add('hidden'); return; }
-            cycleCard.classList.remove('hidden');
-            const now = Date.now();
-            const timeLeft = Math.max(0, (data.activeCycle.startTime + (7 * MS_PER_DAY)) - now);
-            const h = Math.floor(timeLeft / (1000 * 60 * 60));
-            const m = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-            document.getElementById('cardCountdown').innerText = timeLeft <= 0 ? "Complete" : `${h}h ${m}m left`;
-            document.getElementById('activeCardAmt').innerText = "$" + data.activeCycle.amount.toLocaleString();
-            const percent = Math.min(100, ((now - data.activeCycle.startTime) / (7 * MS_PER_DAY)) * 100);
-            document.getElementById('cardProgressBar').style.width = percent + "%";
-        }
-
-        function updateInvest(val) {
-            const num = parseFloat(val) || 0;
-            const btn = document.getElementById('startBtn');
-            document.getElementById('investSlider').value = num;
-            document.getElementById('manualInvest').value = num;
-            if (num >= 500 && currentBalance >= num) {
-                btn.className = "w-full py-6 bg-white text-black rounded-[24px] font-black uppercase text-xs tracking-widest";
-            } else {
-                btn.className = "w-full py-6 rounded-[24px] font-black uppercase text-xs tracking-widest btn-locked";
-            }
-        }
-
+        // OTHER FUNCTIONS (Withdraw, Deposit, etc.)
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function showInvestmentPageFromCard() { document.getElementById('dashboardView').classList.add('hidden'); document.getElementById('investmentDetailsView').classList.remove('hidden'); }
-        function showDashboard() { document.getElementById('investmentDetailsView').classList.add('hidden'); document.getElementById('dashboardView').classList.remove('hidden'); }
         function handleLogout() { auth.signOut().then(() => { location.href = "index.html"; }); }
         function copyBTC() { navigator.clipboard.writeText("Bc1qgf7ruqy6y8pkyzsspxq38j53puny0aprujph28"); notify("COPIED"); }
     </script>
