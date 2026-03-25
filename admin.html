@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>willCoin | MASTER CONSOLE</title>
+    <title>willCoin | MASTER ROOT</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@800&display=swap" rel="stylesheet">
     <style>
         body { background: #000; font-family: 'Plus Jakarta Sans', sans-serif; color: white; }
         .glass { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(20px); }
-        .neo-btn { background: #22d3ee; color: #000; font-weight: 900; transition: 0.3s; }
+        .neo-btn { background: #22d3ee; color: #000; font-weight: 900; }
         .hidden { display: none !important; }
         .tab-active { color: #22d3ee; border-bottom: 2px solid #22d3ee; }
     </style>
@@ -18,9 +18,9 @@
 
     <div id="gate" class="flex items-center justify-center min-h-[80vh]">
         <div class="glass p-10 rounded-[40px] w-full max-w-sm text-center">
-            <h1 class="text-[10px] font-black uppercase tracking-[0.5em] text-cyan-400 mb-8">Secure Terminal</h1>
+            <h1 class="text-[10px] font-black uppercase tracking-[0.5em] text-cyan-400 mb-8">System Entry</h1>
             <input type="password" id="masterPin" placeholder="••••••" class="w-full bg-white/5 border border-white/10 rounded-2xl py-6 text-center text-3xl font-black outline-none focus:border-cyan-400 text-white mb-6 tracking-[0.5em]">
-            <button onclick="unlock()" class="w-full py-5 neo-btn rounded-2xl text-xs uppercase tracking-widest">Enter Console</button>
+            <button onclick="unlock()" class="w-full py-5 neo-btn rounded-2xl text-xs uppercase tracking-widest">Authorize</button>
         </div>
     </div>
 
@@ -37,7 +37,7 @@
 
         <div id="sectionUsers" class="glass rounded-[30px] overflow-hidden border border-white/5">
             <table class="w-full text-left">
-                <thead class="bg-white/5 text-[9px] font-black uppercase text-white/30 tracking-widest">
+                <thead class="bg-white/5 text-[9px] font-black uppercase text-white/30 p-8">
                     <tr><th class="p-8">Account</th><th class="p-8">Balance</th><th class="p-8 text-right">Action</th></tr>
                 </thead>
                 <tbody id="userList" class="divide-y divide-white/5"></tbody>
@@ -46,11 +46,16 @@
 
         <div id="sectionDeposits" class="hidden glass rounded-[30px] overflow-hidden border border-white/5">
             <table class="w-full text-left">
-                <thead class="bg-white/5 text-[9px] font-black uppercase text-white/30 tracking-widest">
+                <thead class="bg-white/5 text-[9px] font-black uppercase text-white/30">
                     <tr><th class="p-8">User</th><th class="p-8">Amount</th><th class="p-8 text-right">Decision</th></tr>
                 </thead>
                 <tbody id="depositList" class="divide-y divide-white/5"></tbody>
             </table>
+        </div>
+
+        <div class="mt-10 p-4 bg-white/5 rounded-xl border border-white/10">
+            <h3 class="text-[8px] font-black uppercase text-white/20 mb-2">System Debugger</h3>
+            <div id="debugLog" class="text-[10px] font-mono text-cyan-400/50 max-h-32 overflow-y-auto">Scanning for data...</div>
         </div>
     </div>
 
@@ -58,7 +63,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
     <script>
-        // Your existing config
         const firebaseConfig = { 
             apiKey: "AIzaSyDsY7hDvNEDq_8SE0XcHrgLU5e6kQxpMPA", 
             authDomain: "willcoincapital.firebaseapp.com", 
@@ -69,6 +73,8 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+
+        function log(msg) { document.getElementById('debugLog').innerHTML += `<br>> ${msg}`; }
 
         function unlock() {
             if(document.getElementById('masterPin').value === "555888") {
@@ -86,35 +92,35 @@
         }
 
         function loadData() {
+            log("Attaching database listeners...");
             db.collection('users').onSnapshot(snap => {
                 const userBody = document.getElementById('userList');
                 const depositBody = document.getElementById('depositList');
                 userBody.innerHTML = "";
                 depositBody.innerHTML = "";
+                let pendingCount = 0;
 
                 snap.forEach(doc => {
                     const u = doc.data();
                     
-                    // Add to User Table
                     userBody.innerHTML += `<tr>
                         <td class="p-8 text-sm font-bold">${u.email}</td>
                         <td class="p-8 font-black text-cyan-400 text-2xl">$${(u.balance || 0).toLocaleString()}</td>
-                        <td class="p-8 text-right">
-                            <button onclick="editBal('${doc.id}')" class="bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-[9px] font-black uppercase">Edit</button>
-                        </td>
+                        <td class="p-8 text-right"><button onclick="editBal('${doc.id}')" class="bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-[9px] font-black uppercase">Edit</button></td>
                     </tr>`;
 
-                    // Scan History for Pending Items
                     if (u.history && Array.isArray(u.history)) {
                         u.history.forEach((item, index) => {
-                            // This looks for "Pending" or "pending" to be safe
-                            if (item.status && item.status.toLowerCase() === "pending") {
+                            // FLEXIBLE STATUS CHECK: Ignores spaces and capitalization
+                            const statusClean = (item.status || "").trim().toLowerCase();
+                            if (statusClean === "pending") {
+                                pendingCount++;
                                 depositBody.innerHTML += `<tr>
                                     <td class="p-8 text-sm font-bold text-white/80">${u.email}</td>
                                     <td class="p-8 font-black text-white text-2xl">$${(item.amount || 0).toLocaleString()}</td>
                                     <td class="p-8 text-right space-x-3">
                                         <button onclick="resolveDep('${doc.id}', ${index}, 'Successful')" class="bg-cyan-400 text-black px-6 py-2 rounded-xl text-[9px] font-black uppercase">Approve</button>
-                                        <button onclick="resolveDep('${doc.id}', ${index}, 'Failed')" class="bg-red-500/10 text-red-500 px-6 py-2 rounded-xl text-[9px] font-black uppercase">Decline</button>
+                                        <button onclick="resolveDep('${doc.id}', ${index}, 'Failed')" class="bg-red-500/10 text-red-500 border border-red-500/20 px-6 py-2 rounded-xl text-[9px] font-black uppercase">Fail</button>
                                     </td>
                                 </tr>`;
                             }
@@ -122,14 +128,15 @@
                     }
                 });
 
-                if (depositBody.innerHTML === "") {
-                    depositBody.innerHTML = `<tr><td colspan="3" class="p-20 text-center text-white/10 uppercase font-black text-[10px] tracking-[0.5em]">No Pending Transactions</td></tr>`;
+                log(`Sync Complete. Users: ${snap.size} | Pending Found: ${pendingCount}`);
+                if (pendingCount === 0) {
+                    depositBody.innerHTML = `<tr><td colspan="3" class="p-20 text-center text-white/10 uppercase font-black text-[10px] tracking-[0.5em]">No Pending Transactions Found</td></tr>`;
                 }
-            });
+            }, err => log("FIREBASE ERROR: " + err.message));
         }
 
         async function editBal(id) {
-            const val = prompt("Enter new balance:");
+            const val = prompt("New Balance:");
             if(val) await db.collection('users').doc(id).update({ balance: parseFloat(val) });
         }
 
@@ -138,23 +145,17 @@
             try {
                 await db.runTransaction(async (transaction) => {
                     const userDoc = await transaction.get(userRef);
-                    let userData = userDoc.data();
-                    let history = userData.history;
-                    let currentBal = userData.balance || 0;
-                    let depositAmount = history[historyIndex].amount;
+                    let history = userDoc.data().history;
+                    let currentBal = userDoc.data().balance || 0;
+                    let amount = history[historyIndex].amount;
 
-                    // Update the specific history item
                     history[historyIndex].status = newStatus;
+                    let update = { history: history };
+                    if (newStatus === 'Successful') update.balance = currentBal + amount;
 
-                    // Update balance only on approval
-                    let updateData = { history: history };
-                    if (newStatus === 'Successful') {
-                        updateData.balance = currentBal + depositAmount;
-                    }
-
-                    transaction.update(userRef, updateData);
+                    transaction.update(userRef, update);
                 });
-                alert("Updated: " + newStatus);
+                alert("Decision Processed: " + newStatus);
             } catch(e) { alert("Error: " + e.message); }
         }
     </script>
