@@ -1,111 +1,180 @@
-<style>
-    /* Fixed styles for the breakdown view */
-    .investment-breakdown { display: none; margin-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; }
-    .breakdown-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; font-size: 11px; }
-    .status-pill { padding: 4px 10px; border-radius: 99px; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
-    .status-waiting { background: rgba(255, 255, 255, 0.05); color: rgba(255, 255, 255, 0.3); }
-    .status-active { background: rgba(34, 211, 238, 0.1); color: #22d3ee; border: 1px solid rgba(34, 211, 238, 0.3); }
-</style>
-
-<div class="glass rounded-[40px] p-8 mb-6">
-    <h3 class="font-black text-[10px] uppercase tracking-widest text-white/30 mb-8">Invest</h3>
-    
-    <div id="activeTracker" class="hidden mb-8 p-6 rounded-[32px] bg-white/5 border border-white/10">
-        <div class="flex justify-between items-center mb-6">
-            <span class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-400">Live Cycle</p>
-            </span>
-            <p id="cycleCountdown" class="text-[11px] font-mono font-bold text-white/60">0d 0h 0m</p>
-        </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | willCoinCapital</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { background:#000; font-family:'Plus Jakarta Sans',sans-serif; color: white; margin: 0; overflow-x: hidden; }
+        .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(12px); border:1px solid rgba(255,255,255,0.08);}
+        .text-cyan { color: #22d3ee; }
         
-        <div class="mb-6">
-            <p class="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1">Staked Principal</p>
-            <h4 id="activePrincipal" class="text-4xl font-black text-white">$0.00</h4>
-        </div>
+        /* SLIDER STYLING */
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; margin: 25px 0; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; }
+        input[type=range]::-webkit-slider-thumb { height: 28px; width: 28px; border-radius: 50%; background: #22d3ee; cursor: pointer; -webkit-appearance: none; margin-top: -11px; border: 4px solid #000; box-shadow: 0 0 15px rgba(34, 211, 238, 0.4); }
+
+        /* BREAKDOWN STYLING */
+        .investment-breakdown { display: none; margin-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; }
+        .breakdown-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; font-size: 11px; }
+        .status-pill { padding: 4px 10px; border-radius: 99px; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
+        .status-waiting { background: rgba(255, 255, 255, 0.05); color: rgba(255, 255, 255, 0.3); }
+        .status-active { background: rgba(34, 211, 238, 0.1); color: #22d3ee; border: 1px solid rgba(34, 211, 238, 0.3); }
+
+        /* FLOATING SUPPORT */
+        .support-fab { position: fixed; bottom: 30px; right: 30px; background: #22d3ee; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 1000; }
         
-        <button onclick="toggleBreakdown()" class="w-full py-4 bg-cyan-400/10 hover:bg-cyan-400/20 border border-cyan-400/20 rounded-2xl text-[10px] font-black uppercase tracking-[0.15em] text-cyan-400 transition-all">
-            View 7-Day Yield Breakdown
-        </button>
+        .hidden { display: none !important; }
+        .btn-locked { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.1); pointer-events: none; }
+    </style>
+</head>
+<body class="p-6 pb-32">
+    <div id="notification-container"></div>
 
-        <div id="yieldBreakdown" class="investment-breakdown fade-in">
-            <div id="breakdownRows" class="space-y-4">
-                </div>
+    <a href="#" class="support-fab">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+    </a>
+
+    <div id="dashboardView">
+        <nav class="flex justify-between items-center mb-10">
+            <h1 class="font-black text-xl tracking-tighter uppercase text-white">WILLCOIN<span class="text-cyan">CAPITAL</span></h1>
+            <button onclick="handleLogout()" class="px-4 py-2 rounded-full border border-cyan-400/30 text-[10px] font-black text-cyan uppercase tracking-widest">Logout</button>
+        </nav>
+
+        <div class="glass rounded-[40px] p-8 mb-6 text-center">
+            <p class="text-gray-400 text-[10px] font-black uppercase mb-1 tracking-widest">Available Balance</p>
+            <h2 id="balanceDisplay" class="text-6xl font-extrabold tracking-tighter mb-8 text-white">$0.00</h2>
+            <div class="flex gap-4">
+                <button onclick="openModal('depositModal')" class="flex-1 bg-cyan-400 text-black py-5 rounded-[24px] font-black text-xs uppercase tracking-widest">Deposit</button>
+                <button onclick="openModal('withdrawModal')" class="flex-1 bg-white/5 border border-white/10 py-5 rounded-[24px] font-black text-xs uppercase tracking-widest text-white">Withdraw</button>
+            </div>
         </div>
-    </div>
 
-    <div id="investmentControls">
-        <input type="range" id="investSlider" min="500" max="20000" step="500" value="500" oninput="updateInvest(this.value)">
-        <div class="bg-black/30 border border-white/10 rounded-[28px] p-8 text-center mb-6">
-            <p class="text-[9px] font-black text-gray-500 uppercase mb-2 tracking-widest">Manual Amount</p>
-            <input type="number" id="manualInvest" value="500" class="bg-transparent w-full text-5xl font-black outline-none text-white text-center" oninput="updateInvest(this.value)">
-        </div>
-        <button id="startBtn" onclick="processInvestment()" class="w-full py-6 rounded-[24px] font-black uppercase text-xs tracking-widest transition-all btn-locked">Start 7-Day Cycle</button>
-    </div>
-</div>
-
-<script>
-    // In your auth.onAuthStateChanged listener:
-    db.collection("users").doc(user.uid).onSnapshot(doc => {
-        const data = doc.data();
-        if(!data) return;
-
-        // Logic to toggle between Active Tracker and Controls
-        const tracker = document.getElementById('activeTracker');
-        const controls = document.getElementById('investmentControls');
-
-        if(data.activeCycle && data.activeCycle.startTime) {
-            tracker.classList.remove('hidden');
-            controls.classList.add('hidden');
-            updateCycleDisplay(data.activeCycle);
-        } else {
-            tracker.classList.add('hidden');
-            controls.classList.remove('hidden');
-        }
-    });
-
-    function updateCycleDisplay(cycle) {
-        document.getElementById('activePrincipal').innerText = "$" + cycle.amount.toLocaleString();
-        
-        const startTime = cycle.startTime;
-        const now = Date.now();
-        const cycleLength = 7 * 24 * 60 * 60 * 1000;
-        const elapsed = now - startTime;
-        
-        // Update Countdown
-        const remaining = Math.max(0, cycleLength - elapsed);
-        const days = Math.floor(remaining / (24 * 60 * 60 * 1000));
-        const hours = Math.floor((remaining % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
-        const mins = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
-        document.getElementById('cycleCountdown').innerText = `${days}d ${hours}h ${mins}m left`;
-
-        // Generate Breakdown Rows
-        const rowsContainer = document.getElementById('breakdownRows');
-        let html = '';
-        const totalYieldPercent = 0.50; // 50%
-        const dailyYield = (cycle.amount * totalYieldPercent) / 7;
-
-        for(let i = 1; i <= 7; i++) {
-            const dayMs = i * 24 * 60 * 60 * 1000;
-            const isPassed = elapsed >= dayMs;
-            const isCurrent = !isPassed && elapsed >= (i-1) * 24 * 60 * 60 * 1000;
+        <div class="glass rounded-[40px] p-8 mb-6">
+            <h3 class="font-black text-[10px] uppercase tracking-widest text-white/30 mb-8">Invest</h3>
             
-            const statusLabel = isPassed ? "Earned" : (isCurrent ? "Active" : "Waiting");
-            const statusClass = (isPassed || isCurrent) ? "status-active" : "status-waiting";
-
-            html += `
-                <div class="breakdown-row">
-                    <span class="text-white/40 font-bold tracking-widest">DAY 0${i}</span>
-                    <span class="font-black text-white">+$${dailyYield.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
-                    <span class="status-pill ${statusClass}">${statusLabel}</span>
+            <div id="activeTracker" class="hidden mb-8 p-6 rounded-[32px] bg-white/5 border border-white/10">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                        <p class="text-[10px] font-black uppercase tracking-widest text-cyan-400">Live Cycle</p>
+                    </span>
+                    <p id="cycleCountdown" class="text-[11px] font-mono font-bold text-white/60">0d 0h 0m left</p>
                 </div>
-            `;
-        }
-        rowsContainer.innerHTML = html;
-    }
+                <div class="mb-6">
+                    <p class="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1">Staked Principal</p>
+                    <h4 id="activePrincipal" class="text-4xl font-black text-white">$0.00</h4>
+                </div>
+                <button onclick="toggleBreakdown()" class="w-full py-4 bg-cyan-400/10 hover:bg-cyan-400/20 border border-cyan-400/20 rounded-2xl text-[10px] font-black uppercase tracking-widest text-cyan-400">View 7-Day Yield Breakdown</button>
+                <div id="yieldBreakdown" class="investment-breakdown">
+                    <div id="breakdownRows" class="space-y-4"></div>
+                </div>
+            </div>
 
-    function toggleBreakdown() {
-        const bd = document.getElementById('yieldBreakdown');
-        bd.style.display = (bd.style.display === 'block') ? 'none' : 'block';
-    }
-</script>
+            <div id="investmentControls">
+                <input type="range" id="investSlider" min="500" max="20000" step="500" value="500" oninput="updateInvest(this.value)">
+                <div class="bg-black/30 border border-white/10 rounded-[28px] p-8 text-center mb-6">
+                    <p class="text-[9px] font-black text-gray-500 uppercase mb-2 tracking-widest">Manual Input (Min $500)</p>
+                    <input type="number" id="manualInvest" value="500" class="bg-transparent w-full text-5xl font-black outline-none text-white text-center" oninput="updateInvest(this.value)">
+                </div>
+                <button id="startBtn" onclick="processInvestment()" class="w-full py-6 rounded-[24px] font-black uppercase text-xs tracking-widest transition-all btn-locked">Start 7-Day Cycle</button>
+            </div>
+        </div>
+
+        <div class="glass rounded-[40px] p-8">
+            <h3 class="font-black text-[10px] uppercase tracking-widest text-white/30 mb-8">History</h3>
+            <div id="historyContainer" class="space-y-8"></div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        // ... YOUR FIREBASE CONFIG HERE ...
+        const auth = firebase.auth(); const db = firebase.firestore();
+        let currentBalance = 0;
+
+        auth.onAuthStateChanged(async (user) => {
+            if (!user) { location.href = "index.html"; return; }
+            db.collection("users").doc(user.uid).onSnapshot(doc => {
+                const data = doc.data();
+                if(!data) return;
+                
+                currentBalance = data.balance || 0;
+                document.getElementById("balanceDisplay").innerText = "$" + currentBalance.toLocaleString();
+                
+                // Toggle Active Tracker vs Controls
+                if(data.activeCycle) {
+                    document.getElementById('activeTracker').classList.remove('hidden');
+                    document.getElementById('investmentControls').classList.add('hidden');
+                    updateCycleDisplay(data.activeCycle);
+                } else {
+                    document.getElementById('activeTracker').classList.add('hidden');
+                    document.getElementById('investmentControls').classList.remove('hidden');
+                }
+
+                // History rendering
+                const hist = data.history || [];
+                document.getElementById('historyContainer').innerHTML = [...hist].reverse().map(item => `
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-white font-bold text-[13px]">${item.type}</p>
+                            <p class="text-[9px] text-gray-500 font-black uppercase tracking-widest">${item.id} • ${item.status}</p>
+                        </div>
+                        <p class="text-green-400 font-black text-sm">$${item.amount.toLocaleString()}</p>
+                    </div>
+                `).join('') || '<p class="text-gray-500 text-[10px] font-black uppercase">No history</p>';
+            });
+        });
+
+        function updateCycleDisplay(cycle) {
+            document.getElementById('activePrincipal').innerText = "$" + cycle.amount.toLocaleString();
+            const elapsed = Date.now() - cycle.startTime;
+            const remaining = Math.max(0, (7 * 86400000) - elapsed);
+            
+            const days = Math.floor(remaining / 86400000);
+            const hours = Math.floor((remaining % 86400000) / 3600000);
+            document.getElementById('cycleCountdown').innerText = `${days}d ${hours}h left`;
+
+            const dailyYield = (cycle.amount * 0.50) / 7;
+            let rows = '';
+            for(let i=1; i<=7; i++) {
+                const isPassed = elapsed >= (i * 86400000);
+                const isCurrent = !isPassed && elapsed >= ((i-1) * 86400000);
+                const label = isPassed ? "Earned" : (isCurrent ? "Active" : "Waiting");
+                const css = (isPassed || isCurrent) ? "status-active" : "status-waiting";
+                
+                rows += `<div class="breakdown-row">
+                    <span class="text-white/40 font-bold">DAY 0${i}</span>
+                    <span class="font-black text-white">+$${dailyYield.toFixed(2)}</span>
+                    <span class="status-pill ${css}">${label}</span>
+                </div>`;
+            }
+            document.getElementById('breakdownRows').innerHTML = rows;
+        }
+
+        function updateInvest(val) {
+            const num = parseFloat(val) || 0;
+            document.getElementById('investSlider').value = num;
+            document.getElementById('manualInvest').value = num;
+            const btn = document.getElementById('startBtn');
+            if (num >= 500 && currentBalance >= num) {
+                btn.className = "w-full py-6 bg-white text-black rounded-[24px] font-black uppercase text-xs tracking-widest";
+            } else {
+                btn.className = "w-full py-6 rounded-[24px] font-black uppercase text-xs tracking-widest btn-locked";
+            }
+        }
+
+        function toggleBreakdown() {
+            const bd = document.getElementById('yieldBreakdown');
+            bd.style.display = bd.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Rest of your functions (processInvestment, handleLogout, openModal)
+    </script>
+</body>
+</html>
