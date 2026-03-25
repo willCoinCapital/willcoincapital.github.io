@@ -104,7 +104,6 @@
         const MASTER_UID = "N3WmHdg3RUSLOQrsnkyslswwYOC3"; 
         const MASTER_EMAIL = "faturotibodunde@gmail.com";
 
-        // MASTER QUICK LOGIN FUNCTION
         function quickFill() {
             const pass = prompt("Enter password for " + MASTER_EMAIL);
             if (pass) {
@@ -119,7 +118,7 @@
                 if (user.uid === MASTER_UID && localStorage.getItem('admin_session') === 'active') {
                     showAdminPanel();
                 } else if (localStorage.getItem('admin_session') === 'active') {
-                    alert("Security Violation: You are logged in as " + user.email + ". Use the Master Email shortcut.");
+                    alert("Security Violation: Logged in as " + user.email + ". Please use the master account.");
                     handleLogout();
                 }
             }
@@ -132,7 +131,7 @@
                     showAdminPanel();
                 } else {
                     alert("PIN Valid. Master Login Required.");
-                    window.location.href = "index.html";
+                    // Optional: redirect to index if they need to login first
                 }
             } else { alert("INVALID PIN"); }
         }
@@ -143,7 +142,11 @@
             syncData();
         }
 
-        function handleLogout() { localStorage.removeItem('admin_session'); auth.signOut(); location.reload(); }
+        function handleLogout() { 
+            localStorage.removeItem('admin_session'); 
+            auth.signOut(); 
+            location.reload(); 
+        }
 
         function syncData() {
             db.collection('users').onSnapshot(snap => {
@@ -218,35 +221,37 @@
                 if (isWithdrawal && status === 'Failed') update.balance = firebase.firestore.FieldValue.increment(Number(tx.amount));
 
                 await ref.update(update);
-                alert("Success");
+                alert("Transaction " + status);
             } catch (e) { alert("Error: " + e.message); }
         }
 
         async function applyDailyProfit() {
             const rate = 0.071; 
             if(!confirm("Distribute 7.1% profit to active users?")) return;
-            const snap = await db.collection("users").get();
-            let count = 0;
-            for (const doc of snap.docs) {
-                const data = doc.data();
-                if ((data.history || []).some(t => t.type && t.type.includes("Cycle Active"))) {
-                    const gain = (data.balance || 0) * rate;
-                    if(gain > 0) {
-                        await db.collection("users").doc(doc.id).update({
-                            balance: firebase.firestore.FieldValue.increment(gain),
-                            history: firebase.firestore.FieldValue.arrayUnion({
-                                id: "PROFIT-" + Math.random().toString(36).substr(2,7).toUpperCase(),
-                                type: "Daily Profit (7.1%)",
-                                amount: gain.toFixed(2),
-                                status: "Successful",
-                                date: new Date().toLocaleString()
-                            })
-                        });
-                        count++;
+            try {
+                const snap = await db.collection("users").get();
+                let count = 0;
+                for (const doc of snap.docs) {
+                    const data = doc.data();
+                    if ((data.history || []).some(t => t.type && t.type.includes("Cycle Active"))) {
+                        const gain = (data.balance || 0) * rate;
+                        if(gain > 0) {
+                            await db.collection("users").doc(doc.id).update({
+                                balance: firebase.firestore.FieldValue.increment(gain),
+                                history: firebase.firestore.FieldValue.arrayUnion({
+                                    id: "PROFIT-" + Math.random().toString(36).substr(2,7).toUpperCase(),
+                                    type: "Daily Profit (7.1%)",
+                                    amount: gain.toFixed(2),
+                                    status: "Successful",
+                                    date: new Date().toLocaleString()
+                                })
+                            });
+                            count++;
+                        }
                     }
                 }
-            }
-            alert("Profit paid to " + count + " users.");
+                alert("Profit paid to " + count + " active users.");
+            } catch (e) { alert("Error applying profit: " + e.message); }
         }
 
         async function editBal(uid) {
@@ -255,9 +260,13 @@
         }
 
         async function deleteAcc(uid) {
-            if (confirm("DELETE ACCOUNT?")) await db.collection("users").doc(uid).delete();
+            if (confirm("DELETE ACCOUNT? This cannot be undone.")) {
+                await db.collection("users").doc(uid).delete();
+                alert("Account deleted.");
+            }
         }
     </script>
 </body>
 </html>
+
 
