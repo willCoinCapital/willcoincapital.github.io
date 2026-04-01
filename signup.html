@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>willCoin Capital | Gateway Access</title>
+    <title>willCoin Capital | Sign Up</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
@@ -12,7 +12,7 @@
 
     <div class="w-full max-w-md bg-[#0a0a0a] border-2 border-[#1a1a1a] p-8 rounded-[2rem] shadow-[10px_10px_0px_#111]">
         <h1 class="text-3xl font-black italic tracking-tighter mb-2">WILLCOIN<span class="text-[#22d3ee]">CAPITAL</span></h1>
-        <p class="text-gray-500 text-sm mb-8 font-medium">Initialize your secure gateway account.</p>
+        <p class="text-gray-500 text-sm mb-8 font-medium">Create your secure account.</p>
 
         <form id="signup-form" class="space-y-4">
             <input type="email" id="email" placeholder="Email Address" required 
@@ -21,7 +21,7 @@
                 class="w-full bg-[#111] border border-[#222] p-4 rounded-xl focus:border-[#22d3ee] outline-none transition-all text-white">
             <button type="submit" id="submit-btn"
                 class="w-full bg-[#22d3ee] text-black font-black uppercase py-4 rounded-xl hover:scale-[0.98] transition-transform">
-                Sign Up
+                Create Account
             </button>
         </form>
         <p id="message" class="mt-6 text-xs text-center font-bold uppercase tracking-widest min-h-[20px]"></p>
@@ -48,22 +48,19 @@
             const statusMsg = document.getElementById('message');
             const btn = document.getElementById('submit-btn');
 
-            statusMsg.innerText = "Creating Account...";
+            statusMsg.innerText = "Processing...";
             statusMsg.style.color = "#22d3ee";
             btn.disabled = true;
 
             try {
-                // 1. Create the user
+                // 1. Create the user in Firebase
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                 
                 // 2. Send the standard Firebase verification email
                 await userCredential.user.sendEmailVerification();
 
-                statusMsg.innerText = "Account Created! Check your email to verify.";
+                statusMsg.innerText = "Check your email to verify your account!";
                 statusMsg.style.color = "#22c55e";
-                
-                // 3. Optional: Redirect to a 'check your email' page
-                // window.location.href = "check-email.html";
 
             } catch (error) {
                 statusMsg.innerText = "Error: " + error.message;
