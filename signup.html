@@ -21,7 +21,7 @@
                 class="w-full bg-[#111] border border-[#222] p-4 rounded-xl focus:border-[#22d3ee] outline-none transition-all text-white">
             <button type="submit" id="submit-btn"
                 class="w-full bg-[#22d3ee] text-black font-black uppercase py-4 rounded-xl hover:scale-[0.98] transition-transform">
-                Initialize Account
+                Sign Up
             </button>
         </form>
         <p id="message" class="mt-6 text-xs text-center font-bold uppercase tracking-widest min-h-[20px]"></p>
@@ -38,11 +38,6 @@
             measurementId: "G-4VEL5JXYYL"
         };
 
-        // --- THE KEY SPLIT (To bypass the security bots) ---
-        const p1 = "xkeysib-f448e95e039309490748124b9369168b";
-        const p2 = "8c335ddf62d6d0867b284d84e2bcec32-nmvX0Mw1RQ9733HZ";
-        const BREVO_API_KEY = p1 + p2;
-
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
@@ -53,42 +48,25 @@
             const statusMsg = document.getElementById('message');
             const btn = document.getElementById('submit-btn');
 
-            statusMsg.innerText = "Syncing with Blockchain...";
+            statusMsg.innerText = "Creating Account...";
             statusMsg.style.color = "#22d3ee";
             btn.disabled = true;
 
             try {
+                // 1. Create the user
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                const verificationLink = await auth.generateEmailVerificationLink(email, {
-                    url: 'https://willcoincapital.github.io/dashboard.html', 
-                    handleCodeInApp: true
-                });
+                
+                // 2. Send the standard Firebase verification email
+                await userCredential.user.sendEmailVerification();
 
-                const response = await fetch('https://api.brevo.com/v3/smtp/email', {
-                    method: 'POST',
-                    headers: { 'accept': 'application/json', 'api-key': BREVO_API_KEY, 'content-type': 'application/json' },
-                    body: JSON.stringify({
-                        sender: { name: "willCoin Capital", email: "support@willcoincapital.firebaseapp.com" },
-                        to: [{ email: email }],
-                        subject: "Verify Your Account | Secure Gateway Activation",
-                        htmlContent: `
-                            <div style="font-family:sans-serif;background-color:#000;color:#fff;padding:40px;text-align:center;">
-                                <h1 style="letter-spacing:-2px;text-transform:uppercase;font-weight:900;">WILLCOIN<span style="color:#22d3ee;">CAPITAL</span></h1>
-                                <div style="background:#0a0a0a;border:2px solid #22d3ee;padding:35px;border-radius:24px;max-width:360px;margin:0 auto;box-shadow:8px 8px 0px #111;">
-                                    <h2 style="font-size:18px;margin-bottom:10px;">Activate Access</h2>
-                                    <p style="color:#9ca3af;font-size:13px;">Verify your identity to claim your <b style="color:#22d3ee;">$100.00 Welcome Bonus</b>.</p>
-                                    <a href="${verificationLink}" style="display:inline-block;background:#22d3ee;color:#000;padding:18px 35px;border-radius:14px;text-decoration:none;font-weight:800;font-size:12px;text-transform:uppercase;">Verify Email Address</a>
-                                </div>
-                            </div>`
-                    })
-                });
+                statusMsg.innerText = "Account Created! Check your email to verify.";
+                statusMsg.style.color = "#22c55e";
+                
+                // 3. Optional: Redirect to a 'check your email' page
+                // window.location.href = "check-email.html";
 
-                if (response.ok) {
-                    statusMsg.innerText = "SUCCESS: CHECK YOUR PRIMARY INBOX";
-                    statusMsg.style.color = "#22c55e";
-                }
             } catch (error) {
-                statusMsg.innerText = "ERROR: " + error.message.toUpperCase();
+                statusMsg.innerText = "Error: " + error.message;
                 statusMsg.style.color = "#ef4444";
                 btn.disabled = false;
             }
