@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,22 +9,12 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 </head>
 <body class="bg-black text-white flex items-center justify-center min-h-screen p-6">
-
-    <div class="w-full max-w-md bg-[#0a0a0a] border-2 border-[#1a1a1a] p-8 rounded-[2rem] shadow-[10px_10px_0px_#111]">
-        <h1 class="text-3xl font-black italic tracking-tighter mb-2">WILLCOIN<span class="text-[#22d3ee]">CAPITAL</span></h1>
-        <p class="text-gray-500 text-sm mb-8 font-medium">Create your secure account.</p>
-
-        <form id="signup-form" class="space-y-4">
-            <input type="email" id="email" placeholder="Email Address" required 
-                class="w-full bg-[#111] border border-[#222] p-4 rounded-xl focus:border-[#22d3ee] outline-none transition-all text-white">
-            <input type="password" id="password" placeholder="Password" required 
-                class="w-full bg-[#111] border border-[#222] p-4 rounded-xl focus:border-[#22d3ee] outline-none transition-all text-white">
-            <button type="submit" id="submit-btn"
-                class="w-full bg-[#22d3ee] text-black font-black uppercase py-4 rounded-xl hover:scale-[0.98] transition-transform">
-                Create Account
-            </button>
-        </form>
-        <p id="message" class="mt-6 text-xs text-center font-bold uppercase tracking-widest min-h-[20px]"></p>
+    <div class="w-full max-w-md bg-[#0a0a0a] border-2 border-[#1a1a1a] p-8 rounded-2xl text-center">
+        <h1 class="text-2xl font-bold mb-6">WILLCOIN CAPITAL</h1>
+        <input type="email" id="email" placeholder="Email" class="w-full bg-zinc-900 border border-zinc-800 p-3 rounded mb-4">
+        <input type="password" id="password" placeholder="Password" class="w-full bg-zinc-900 border border-zinc-800 p-3 rounded mb-6">
+        <button onclick="signUp()" class="w-full bg-cyan-400 text-black font-bold py-3 rounded">Create Account</button>
+        <p id="msg" class="mt-4 text-sm"></p>
     </div>
 
     <script>
@@ -34,40 +24,24 @@
             projectId: "willcoincapital",
             storageBucket: "willcoincapital.appspot.com",
             messagingSenderId: "24156602",
-            appId: "1:241566024834:web:7",
-            measurementId: "G-4VEL5JXYYL"
+            appId: "1:241566024834:web:7"
         };
-
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
 
-        document.getElementById('signup-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
+        async function signUp() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const statusMsg = document.getElementById('message');
-            const btn = document.getElementById('submit-btn');
-
-            statusMsg.innerText = "Processing...";
-            statusMsg.style.color = "#22d3ee";
-            btn.disabled = true;
-
+            const msg = document.getElementById('msg');
             try {
-                // 1. Create the user in Firebase
-                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                
-                // 2. Send the standard Firebase verification email
-                await userCredential.user.sendEmailVerification();
-
-                statusMsg.innerText = "Check your email to verify your account!";
-                statusMsg.style.color = "#22c55e";
-
-            } catch (error) {
-                statusMsg.innerText = "Error: " + error.message;
-                statusMsg.style.color = "#ef4444";
-                btn.disabled = false;
+                const user = await firebase.auth().createUserWithEmailAndPassword(email, password);
+                await user.user.sendEmailVerification();
+                msg.innerText = "Success! Check your email (and Junk folder).";
+                msg.style.color = "green";
+            } catch (e) {
+                msg.innerText = "Error: " + e.message;
+                msg.style.color = "red";
             }
-        });
+        }
     </script>
 </body>
 </html>
